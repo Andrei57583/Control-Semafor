@@ -1,3 +1,5 @@
+// autor: Gheorghe Andrei
+
 module my_dut(pclk_i, rst_n_i, psel_i, penable_i, paddr_i, valid_i, addr_i, irq_o);
 
   input pclk_i;
