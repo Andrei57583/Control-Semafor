@@ -1,35 +1,39 @@
-//Marin Nicolaie 
-
-`include "uvm_macros.svh"
-import uvm_pkg::*;
-
 `ifndef __apb_transaction
 `define __apb_transaction
 
-//o tranzactie este formata din totalitatea datelor transmise la un moment dat pe o interfata
 class tranzactie_apb extends uvm_sequence_item;
   
-  //componenta tranzactie se adauga in baza de date
   `uvm_object_utils(tranzactie_apb)
   
-  rand bit[2:0] addr;
-  
-  //constructorul clasei; această funcție este apelată când se creează un obiect al clasei "tranzactie"
-  function new(string name = "element_secventaa");//numele dat este ales aleatoriu, si nu mai este folosit in alta parte
-    super.new(name);  
-  	addr = 0;
+  rand byte data;
+  rand bit [1:0] address;
+  rand bit rd_wr;        // 0 = write, 1 = read
+  rand int delay_trans;
+
+  constraint delay_c { delay_trans inside {[0:10]}; }
+
+  function new(string name = "tranzactie_apb");
+    super.new(name);
+    data = 0;
+    address = 0;
+    rd_wr = 0;
+    delay_trans = 0;
   endfunction
   
-  //functie de afisare a unei tranzactii
   function void afiseaza_informatia_tranzactiei();
-    $display("Valoarea adresei: %0h", addr);
+    $display("ADDR=%0d DATA=%0d RD_WR=%0b DELAY=%0d",
+              address, data, rd_wr, delay_trans);
   endfunction
   
   function tranzactie_apb copy();
-	copy = new();
-	copy.addr = this.addr;
-	return copy;
+    copy = new();
+    copy.data        = this.data;
+    copy.address     = this.address;
+    copy.rd_wr       = this.rd_wr;
+    copy.delay_trans = this.delay_trans;
+    return copy;
   endfunction
 
 endclass
+
 `endif
