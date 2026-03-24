@@ -42,10 +42,10 @@ class driver_agent_intrare extends uvm_driver #(tranzactie_intrare);
   task trimiterea_tranzactiei(tranzactie_intrare informatia_de_transmis);
     $timeformat(-9, 2, " ns", 20);//cand se va afisa in consola timpul, folosind directiva %t timpul va fi afisat in nanosecunde (-9), cu 2 zecimale, iar dupa valoare se va afisa abrevierea " ns"
     
-    interfata_driverului_pentru_intrare.valid = 'b1;
-    interfata_driverului_pentru_intrare.addr = informatia_de_transmis.addr;
 	 @(posedge interfata_driverului_pentru_intrare.clk);
-   interfata_driverului_pentru_intrare.valid = 'b0;
+      interfata_driverului_pentru_intrare.buton_pietoni = informatia_de_transmis.buton_pietoni;
+      interfata_driverului_pentru_intrare.senzor_lumina = informatia_de_transmis.senzor_lumina;
+      interfata_driverului_pentru_intrare.ora_curenta   = informatia_de_transmis.ora_curenta;
 
     
     `ifdef DEBUG
