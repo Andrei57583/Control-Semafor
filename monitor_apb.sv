@@ -44,11 +44,13 @@ class monitor_apb extends uvm_monitor;
     super.run_phase(phase);
 
     forever begin
-
+	while interfata_monitor_apb.psel==0 
+		begin 
+			starea_preluata_a_apb.delay_trans;
+			@(negedge interfata_monitor_apb.pclk);
+		end
       // astept tranzactie valida APB
-      wait(interfata_monitor_apb.psel &&
-           interfata_monitor_apb.penable &&
-           interfata_monitor_apb.pready);
+      wait(interfata_monitor_apb.pready);
 
       @(negedge interfata_monitor_apb.pclk);
 

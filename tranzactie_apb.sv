@@ -17,7 +17,7 @@ class tranzactie_apb extends uvm_sequence_item;
     data = 0;
     address = 0;
     rd_wr = 0;
-    delay_trans = 0;
+    delay_trans = 5;
   endfunction
   
   function void afiseaza_informatia_tranzactiei();

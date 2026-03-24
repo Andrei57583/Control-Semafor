@@ -38,13 +38,13 @@ class driver_agent_apb extends uvm_driver #(tranzactie_apb);
     $timeformat(-9, 2, " ns", 20);
 
     // SETUP Phase
-    @(posedge interfata_driverului_pentru_apb.pclk);
+    repeat(informatia_de_transmis.delay_trans)@(posedge interfata_driverului_pentru_apb.pclk);
     interfata_driverului_pentru_apb.psel    <= 1'b1;
     interfata_driverului_pentru_apb.penable <= 1'b0;
     interfata_driverului_pentru_apb.paddr   <= informatia_de_transmis.address;
     interfata_driverului_pentru_apb.pwrite  <= ~informatia_de_transmis.rd_wr;
 
-    if(informatia_de_transmis.rd_wr == 0)
+    if(informatia_de_transmis.rd_wr == 0) // daca avem scriere
       interfata_driverului_pentru_apb.pwdata <= informatia_de_transmis.data;
 
     // ACCESS Phase
@@ -53,10 +53,13 @@ class driver_agent_apb extends uvm_driver #(tranzactie_apb);
 
     // WAIT pready (APB handshake)
     wait(interfata_driverului_pentru_apb.pready);
+    //@(posedge interfata_driverului_pentru_apb.pclk iff interfata_driverului_pentru_apb.pready);
+	
 
     // READ: preluam datele citite de la DUT daca e read
-    if(informatia_de_transmis.rd_wr == 1)
-      informatia_de_transmis.data = interfata_driverului_pentru_apb.prdata;
+	// nu cred  ca este necesar in driver:
+    //if(informatia_de_transmis.rd_wr == 1)
+    //  informatia_de_transmis.data = interfata_driverului_pentru_apb.prdata;
 
     // END Phase
     @(posedge interfata_driverului_pentru_apb.pclk);
