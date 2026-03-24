@@ -1,16 +1,12 @@
 //Autor: Florea Andrei
 
-`ifndef __rename_intf
-`define __rename_intf
+`ifndef __output_intf
+`define __output_intf
 
-interface rename_interface_dut;
+interface output_interface_dut;
 
   logic        clk;
-
-  // Intrari externe
-  logic        buton_pietoni;   // cerere trecere
-  logic        senzor_lumina;   // 1 = intuneric, 0 = lumina
-  logic  [4:0] ora_curenta;     // 0 - 23
+logic reset;
 
   // Iesiri DUT
   logic  [2:0] semafor_masini;   // [2]=rosu, [1]=galben, [0]=verde
