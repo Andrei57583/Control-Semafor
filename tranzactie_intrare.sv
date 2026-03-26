@@ -32,7 +32,7 @@ class tranzactie_intrare extends uvm_sequence_item;
     copy = new();
     copy.buton_pietoni = this.buton_pietoni;
     copy.buton_pietoni = this.buton_pietoni;
-    copy.ora_curenta = this.ora_curenta
+    copy.ora_curenta = this.ora_curenta;
     return copy;
   endfunction
 

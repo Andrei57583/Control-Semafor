@@ -12,44 +12,79 @@ import uvm_pkg::*;
 //includerea fisierelor la care modulul de top trebuie sa aiba acces
 
 `include "apb_interface_dut.sv"
-`include "rename_interface_dut.sv"
+`include "input_interface_dut.sv"
+`include "output_interface_dut.sv"
 `include "test_exemplu.sv"
 `include "design.sv"
 
 // Code your testbench here
 
 module top();
-   logic        clk;
-   wire         rst_n;
-   wire  [2:0]  paddr;
-   wire         psel;
-   wire         penable;
-   wire         valid;
-   wire  [2:0]  addr;
-   wire         irq;
+  //semnale generale
+  logic        pclk; 
+  wire        rst_n;
+  // semnale de date
+  wire [7:0]  paddr;
+  wire [7:0]  pwdata;
+  wire [7:0]  prdata;
+  wire        pwrite;
+
+  // semnale de protocol  
+  wire        psel;
+  wire        penable;
+
+  // semnalele date de slave
+  wire        pready;
+  wire        pslverr;
+
+  // Iesiri DUT
+  wire  [2:0] semafor_masini;   // [2]=rosu, [1]=galben, [0]=verde
+  wire  [1:0] semafor_pietoni;  // [1]=rosu, [0]=verde
+  wire        lampa;
+  wire        buzzer_pietoni;
+
+  // Intrari externe
+  wire        buton_pietoni;   // cerere trecere
+  wire        senzor_lumina;   // 1 = intuneric, 0 = lumina
+  wire  [4:0] ora_curenta;   
+
   //sunt create instantele interfetelor (in acest proiect sunt 2 agenti, deci vor fi 2 interfete); se leaga semnalele interfetelor de semnalele din modulul de top
   apb_interface_dut intf_apb();
-  assign intf_apb.pclk = clk;
+  assign intf_apb.pclk = pclk;
   assign rst_n         = intf_apb.rst_n;
   assign psel          = intf_apb.psel;
   assign penable       = intf_apb.penable;
   assign paddr         = intf_apb.paddr;
+  assign pwdata        = intf_apb.pwdata;
+  assign intf_apb.prdata = prdata;
+  assign pwrite = intf_apb.pwrite;
+  assign intf_apb.pready = pready;
+  assign intf_apb.pslverr =pslverr;
   
-  rename_interface_dut intf_rename();
-  assign intf_rename.clk = clk;
-  assign valid = intf_rename.valid;
-  assign addr  = intf_rename.addr;
-  assign intf_rename.irq   = irq;
+  input_interface_dut intf_input();
+  assign intf_input.clk = pclk;
+  assign intf_input.reset = rst_n;
+  assign buton_pietoni = intf_input.buton_pietoni;
+  assign senzor_lumina  = intf_input.senzor_lumina;
+  assign ora_curenta   = intf_input.ora_curenta;
+
+  output_interface_dut intf_output();
+  assign intf_output.clk = pclk;
+  assign intf_output.reset = rst_n;
+  assign intf_output.semafor_masini = semafor_masini;
+  assign intf_output.semafor_pietoni = semafor_pietoni;
+  assign intf_output.lampa = lampa;
+  assign intf_output.buzzer_pietoni = buzzer_pietoni;
   
   initial begin
     //cele 2 linii de mai jos permit vizualizarea formelor de unda (pentru a vizualiza formele de unda trebuie bifata si optiunea "Open EPWave after run" din sectiunea "Tools & Simulators" aflata in stanga paginii)
     $dumpfile("dump.vcd");
     $dumpvars;
     //se genereaza ceasul
-	clk = 1;
+	pclk = 1;
 	forever begin 
     #(`PERIOADA_CEASULUI/2)  
-    clk <= ~clk;
+    pclk <= ~pclk;
   end
 	end
   
@@ -57,21 +92,37 @@ module top();
   	begin
       //se salveaza instantele interfetelor in baza de date UVM
       uvm_config_db#(virtual apb_interface_dut)::set(null, "*", "apb_interface_dut", intf_apb);
-      uvm_config_db#(virtual rename_interface_dut)::set(null, "*", "rename_interface_dut", intf_rename);
+      uvm_config_db#(virtual input_interface_dut)::set(null, "*", "input_interface_dut", intf_input);
+      uvm_config_db#(virtual output_interface_dut)::set(null, "*", "output_interface_dut", intf_output);
+
       //se ruleaza testul dorit
       run_test("test_exemplu");
   	end
 
   // se instantiaza DUT-ul, facandu-se legaturile intre semnalele din modulul de top si semnalele acestuia
   my_dut DUT(
-	.pclk_i                  (clk    ),
-	.rst_n_i                 (rst_n   ),
-	.psel_i                  (psel    ),
-	.penable_i               (penable ),
-  .paddr_i                 (paddr   ),
-  .valid_i                 (valid   ),
-  .addr_i                  (addr    ), 
-  .irq_o                   (irq     )
+	
+  .pclk (pclk),
+  .rst_n(rst_n),
+  .paddr(paddr),
+  .pwdata(pwdata),
+  .prdata(prdata),
+  .pwrite(pwrite),
+
+  .psel(psel),
+  .penable(penable),
+
+  .pready(pready),
+  .pslverr(pslverr),
+
+  .semafor_masini(semafor_masini),   // [2]=rosu, [1]=galbe.
+  .semafor_pietoni(semafor_pietoni),  // [1]=rosu, [0]=verde
+  .lampa(lampa),
+  .buzzer_pietoni(buzzer_pietoni),
+
+  .buton_pietoni (buton_pietoni),  // cerere trecere
+  .senzor_lumina (senzor_lumina),  // 1 = intuneric, 0 = lumina
+  .ora_curenta ( ora_curenta)
 );
 
 endmodule

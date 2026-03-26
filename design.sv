@@ -1,16 +1,34 @@
 // autor: Gheorghe Andrei
 
-module my_dut(pclk_i, rst_n_i, psel_i, penable_i, paddr_i, valid_i, addr_i, irq_o);
+module my_dut(pclk,rst_n,paddr,pwdata,prdata,pwrite,psel,penable,pready,pslverr,semafor_masini,semafor_pietoni,lampa,buzzer_pietoni,buton_pietoni,senzor_lumina,ora_curenta);
 
-  input pclk_i;
-  input rst_n_i;
-  input [2:0] paddr_i;
-  input psel_i;
-  input penable_i;
-  input valid_i;
-  input [2:0] addr_i;
-  output irq_o;
+  //semnale generale
+  input        pclk; 
+  input        rst_n;
+// semnale de date
+  input [7:0]  paddr;
+  input [7:0]  pwdata;
+  output [7:0]  prdata;
+  input        pwrite;
 
-assign irq_o = (psel_i && penable_i && valid_i && (paddr_i == addr_i)) ? 1'b1 : 1'b0;
+// semnale de protocol  
+  input        psel;
+  input        penable;
+
+// semnalele date de slave
+  output        pready;
+  output        pslverr;
+
+  // Iesiri DUT
+  output  [2:0] semafor_masini;   // [2]=rosu, [1]=galben, [0]=verde
+  output  [1:0] semafor_pietoni;  // [1]=rosu, [0]=verde
+  output        lampa;
+  output        buzzer_pietoni;
+
+  // Intrari externe
+  input        buton_pietoni;   // cerere trecere
+  input        senzor_lumina;   // 1 = intuneric, 0 = lumina
+  input  [4:0] ora_curenta;     // 0 - 23
+
 
 endmodule

@@ -33,7 +33,7 @@ class coverage_apb extends uvm_component;
 
     coverpoint p_monitor.starea_preluata_a_apb.delay_trans {
       bins short       = {[0:3]};
-      bins medium      = {[4:7]};
+      bins mediu      = {[4:7]};
       bins long        = {[8:10]};
     }
 

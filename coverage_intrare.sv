@@ -15,12 +15,16 @@ class coverage_intrare extends uvm_component;
   
   covergroup stari_intrare_cg;
     option.per_instance = 1;
-    coverpoint p_monitor.starea_preluata_a_intrare.addr{
-        bins min_addr = {0};
-        bins random_addr = {[1:3]};
-      	bins max_addr = {4};
+    coverpoint p_monitor.starea_preluata_a_intrare.buton_pietoni{
+        bins buton_apasat   = {1};
+        bins buton_neapasat = {0};
     }
-    coverpoint p_monitor.starea_preluata_a_intrare.irq;
+    coverpoint p_monitor.starea_preluata_a_intrare.senzor_lumina{
+        bins senzor_zi     = {0};
+        bins senzor_noapte = {1};
+    }
+    coverpoint p_monitor.starea_preluata_a_intrare.ora_curenta;
+
   endgroup
   
   //se creeaza grupul de coverage; ATENTIE! Fara functia de mai jos, grupul de coverage nu va putea esantiona niciodata date deoarece pana acum el a fost doar declarat, nu si creat

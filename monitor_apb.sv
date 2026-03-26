@@ -1,17 +1,18 @@
 `ifndef __apb_monitor
 `define __apb_monitor
 
+`include "apb_interface_dut.sv"
 class monitor_apb extends uvm_monitor;
   
   `uvm_component_utils(monitor_apb)
 
   coverage_apb colector_coverage_apb;
 
-  uvm_analysis_port #(tranzactie_APB) port_date_monitor_apb;
+  uvm_analysis_port #(tranzactie_apb) port_date_monitor_apb;
 
   virtual apb_interface_dut interfata_monitor_apb;
 
-  tranzactie_APB starea_preluata_a_apb, aux_tr_apb;
+  tranzactie_apb starea_preluata_a_apb, aux_tr_apb;
 
   function new(string name = "monitor_apb", uvm_component parent = null);
     super.new(name, parent);
@@ -20,8 +21,8 @@ class monitor_apb extends uvm_monitor;
 
     colector_coverage_apb = coverage_apb::type_id::create("colector_coverage_apb", this);
 
-    starea_preluata_a_apb = tranzactie_APB::type_id::create("tr_curent");
-    aux_tr_apb            = tranzactie_APB::type_id::create("tr_copy");
+    starea_preluata_a_apb = tranzactie_apb::type_id::create("tr_curent");
+    aux_tr_apb            = tranzactie_apb::type_id::create("tr_copy");
   endfunction
 
 
