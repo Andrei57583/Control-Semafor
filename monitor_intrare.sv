@@ -66,13 +66,13 @@ class monitor_intrare extends uvm_monitor;
     
     forever begin
       
-      //!!!!sa astept ca datele sa fie valide
-      wait(interfata_monitor_intrare.valid); 
       //vreau sa citesc semnalul valid_i doar pe fronturile descrescatoare de ceas
       @(negedge interfata_monitor_intrare.clk); 
       //preiau datele de pe interfata de iesire a DUT-ului (interfata_semafoare)
-      starea_preluata_a_intrare.addr = interfata_monitor_intrare.addr;
-      starea_preluata_a_intrare.irq = interfata_monitor_intrare.irq;
+      starea_preluata_a_intrare.buton_pietoni = interfata_monitor_intrare.buton_pietoni;
+      starea_preluata_a_intrare.senzor_lumina = interfata_monitor_intrare.senzor_lumina;
+      starea_preluata_a_intrare.ora_curenta   = interfata_monitor_intrare.ora_curenta;
+
 
       aux_tr_intrare = starea_preluata_a_intrare.copy();//nu vreau sa folosesc pointerul starea_preluata_a_intrare pentru a trimite datele, deoarece continutul acestuia se schimba, iar scoreboardul va citi alte date 
       

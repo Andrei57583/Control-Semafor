@@ -10,27 +10,30 @@ class tranzactie_intrare extends uvm_sequence_item;
   //componenta tranzactie se adauga in baza de date
   `uvm_object_utils(tranzactie_intrare)
   
-  rand bit[2:0] addr;
-       bit      irq; //output, deci nu e rand
+  rand bit        buton_pietoni; //cerere trecere
+  rand bit        senzor_lumina; //1 = intuneric, 0 = lumina
+  rand bit[4:0]   ora_curenta;   // 0 - 23
   
   
   //constructorul clasei; această funcție este apelată când se creează un obiect al clasei "tranzactie"
   function new(string name = "element_secventaa");//numele dat este ales aleatoriu, si nu mai este folosit in alta parte
     super.new(name);  
-  	addr = 0;
-    irq  = 0;
+  	buton_pietoni = 0;
+    senzor_lumina = 0;
+    ora_curenta   = 0;
   endfunction
   
   //functie de afisare a unei tranzactii
   function void afiseaza_informatia_tranzactiei();
-    $display("Valoarea adresei: %0h, IRQ: %b", addr, irq);
+    $display("Valoarea butonului: %b, Senzor lumina: %b, Ora curenta: %0h", buton_pietoni, senzor_lumina, ora_curenta);
   endfunction
   
   function tranzactie_intrare copy();
-	copy = new();
-	copy.addr = this.addr;
-  copy.irq = this.irq;
-	return copy;
+    copy = new();
+    copy.buton_pietoni = this.buton_pietoni;
+    copy.buton_pietoni = this.buton_pietoni;
+    copy.ora_curenta = this.ora_curenta
+    return copy;
   endfunction
 
 endclass
