@@ -23,18 +23,7 @@ module top();
    wire         rst_n;
   
   //sunt create instantele interfetelor (in acest proiect sunt 2 agenti, deci vor fi 2 interfete); se leaga semnalele interfetelor de semnalele din modulul de top
-  /*apb_interface_dut intf_apb();
-  assign intf_apb.pclk = clk;
-  assign rst_n         = intf_apb.rst_n;
-  assign psel          = intf_apb.psel;
-  assign penable       = intf_apb.penable;
-  assign paddr         = intf_apb.paddr;
   
-  rename_interface_dut intf_rename();
-  assign intf_rename.clk = clk;
-  assign valid = intf_rename.valid;
-  assign addr  = intf_rename.addr;
-  assign intf_rename.irq   = irq;*/
  
 
 
@@ -59,6 +48,23 @@ wire  [8-1:0] durata_display; //un indicator LED care arata masinilor cat timp m
 wire               lampa         ; //lampa care ilumineaza trecerea de pietoni // activ pe senzor_lumina = 0
 wire               buzer_pietoni;  //buzer pentru persoane cu dizabilitati de vedere //activ pe pieton = 1
 
+apb_interface_dut intf_apb();
+  assign intf_apb.pclk = clk;
+  assign rst_n         = intf_apb.rst_n;
+  assign Psel          = intf_apb.psel;
+  assign Penable       = intf_apb.penable;
+  assign Paddr         = intf_apb.paddr;
+  assign Pwrite		   =intf_apb.pwrite;
+  assign Pwdata		   =intf_apb.pwdata;
+  assign intf_apb.pready= Pready;
+  assign intf_apb.prdata=Prdata;
+  assign intf_apb.pslverr=Pslverr;
+  
+  rename_interface_dut intf_rename();
+  assign intf_rename.clk = clk;
+  assign valid = intf_rename.valid;
+  assign addr  = intf_rename.addr;
+  assign intf_rename.irq   = irq;
 
  Semafor_control #(
 //.wait_button       (10), //semafor car green  -> yellow
