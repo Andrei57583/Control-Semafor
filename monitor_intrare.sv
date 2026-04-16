@@ -18,7 +18,7 @@ class monitor_intrare extends uvm_monitor;
   
   //declaratia interfetei de unde monitorul isi colecteaza datele
   //virtual interfata_intrare interfata_monitor_intrare;
-  virtual intrare_interface_dut interfata_monitor_intrare;
+  virtual input_interface_dut interfata_monitor_intrare;
   
   tranzactie_intrare starea_preluata_a_intrare, aux_tr_intrare;
   
@@ -47,7 +47,7 @@ class monitor_intrare extends uvm_monitor;
   virtual function void build_phase(uvm_phase phase);
     super.build_phase(phase);
     
-    if (!uvm_config_db#(virtual intrare_interface_dut)::get(this, "", "intrare_interface_dut", interfata_monitor_intrare))
+    if (!uvm_config_db#(virtual input_interface_dut)::get(this, "", "input_interface_dut", interfata_monitor_intrare))
         `uvm_fatal("MONITOR_intrare", "Nu s-a putut accesa interfata monitorului")
   endfunction
         

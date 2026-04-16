@@ -1,6 +1,8 @@
 `ifndef __scoreboard
 `define __scoreboard
 
+
+`uvm_analysis_imp_decl(_apb)
 `include "tranzactie_apb.sv"
 import uvm_pkg::*;
 

@@ -1,6 +1,7 @@
 //Autor Dennis Muturi
 
 `include "uvm_macros.svh"
+`include "tranzactie_iesire.sv"
 import uvm_pkg::*;
 
 `ifndef __output_monitor
@@ -13,16 +14,16 @@ class monitor_output extends uvm_monitor;
   `uvm_component_utils (monitor_output) 
   
   //se declara colectorul de coverage care va inregistra valorile semnalelor de pe interfata citite de monitor
-  coverage_output colector_coverage_output; 
+ // coverage_output colector_coverage_output; 
   
   //este creat portul prin care monitorul trimite spre exterior (la noi, informatia este accesata de scoreboard), prin intermediul agentului, tranzactiile extrase din traficul de pe interfata
-  uvm_analysis_port #(tranzactie_output) port_date_monitor_output;
+  uvm_analysis_port #(tranzactie_iesire) port_date_monitor_output;
   
   //declaratia interfetei de unde monitorul isi colecteaza datele
   //virtual interfata_output interfata_monitor_output;
   virtual output_interface_dut interfata_monitor_output;
   
-  tranzactie_output starea_preluata_a_output, aux_tr_output;
+  tranzactie_iesire starea_preluata_a_output, aux_tr_output;
   
   //constructorul clasei
   function new(string name = "monitor_output", uvm_component parent = null);
@@ -35,13 +36,13 @@ class monitor_output extends uvm_monitor;
     
     //se creeaza colectorul de coverage (la creare, se apeleaza constructorul colectorului de coverage)
     
-    colector_coverage_output = coverage_output::type_id::create ("colector_coverage_output", this);
+   // colector_coverage_output = coverage_output::type_id::create ("colector_coverage_output", this);
     
     
     //se creeaza obiectul (tranzactia) in care se vor retine datele colectate de pe interfata la fiecare tact de ceas
-    starea_preluata_a_output = tranzactie_output::type_id::create("date_noi");
+    starea_preluata_a_output = tranzactie_iesire::type_id::create("date_noi");
     
-    aux_tr_output = tranzactie_output::type_id::create("datee_noi");
+    aux_tr_output = tranzactie_iesire::type_id::create("datee_noi");
   endfunction
   
   
@@ -59,7 +60,7 @@ class monitor_output extends uvm_monitor;
     super.connect_phase(phase);
     
     //in faza UVM "connect", se face conexiunea intre pointerul catre monitor din instanta colectorului de coverage a acestui monitor si monitorul insusi 
-	colector_coverage_output.p_monitor = this;
+	//colector_coverage_output.p_monitor = this;
     
   endfunction
   
@@ -88,7 +89,7 @@ class monitor_output extends uvm_monitor;
       aux_tr_output.afiseaza_informatia_tranzactiei();
 	  
       //se inregistreaza valorile de pe cele doua semnale de iesire
-      colector_coverage_output.stari_output_cg.sample();
+    //  colector_coverage_output.stari_output_cg.sample();
       
 	  @(negedge interfata_monitor_output.clk); //acest wait il adaug deoarece uneori o tranzactie este interpretata a fi doua tranzactii identice back to back (validul este citit ca fiind 1 pe doua fronturi consecutive de ceas); in implementarea curenta nu se poate sa vina doua tranzactii back to back
       

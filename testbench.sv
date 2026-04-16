@@ -100,7 +100,7 @@ module top();
   	end
 
   // se instantiaza DUT-ul, facandu-se legaturile intre semnalele din modulul de top si semnalele acestuia
-  my_dut DUT(
+ /*  my_dut Semafor_control(
 	
   .pclk (pclk),
   .rst_n(rst_n),
@@ -123,6 +123,6 @@ module top();
   .buton_pietoni (buton_pietoni),  // cerere trecere
   .senzor_lumina (senzor_lumina),  // 1 = intuneric, 0 = lumina
   .ora_curenta ( ora_curenta)
-);
+); */
 
 endmodule

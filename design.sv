@@ -41,6 +41,9 @@ output               lampa         , //lampa care ilumineaza trecerea de pietoni
 output               buzer_pietoni  //buzer pentru persoane cu dizabilitati de vedere //activ pe pieton = 1
 );
 
+
+
+/*
 task sgsggsggdg//////////////////////////////////////////////////////////////////////////////////////////////////
 //registri acceesibili prin APB
 reg  [8-1:0]   car_green_reg;  //0
@@ -202,7 +205,7 @@ end
         end
     end
   end
-  */
+  */  
 endmodule
 
 //00000   1

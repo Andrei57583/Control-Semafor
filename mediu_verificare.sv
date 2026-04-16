@@ -4,7 +4,7 @@ import uvm_pkg::*;
 `ifndef __verification_environment
 `define __verification_environment
 
-typedef scoreboard;//aceasta este o pre-definire a tipului de data scoreboard folosita pentru a evita erorile aparute in urma faptului ca scoreboardul importa colectorul de coverage "coverage_valori_citite_apb_ref", si colectorul de coverage importa scoreboardul; explicatia in engleza: this is a forward type definition used to solve cross dependency between scoreboard and coverage class
+//typedef scoreboard;//aceasta este o pre-definire a tipului de data scoreboard folosita pentru a evita erorile aparute in urma faptului ca scoreboardul importa colectorul de coverage "coverage_valori_citite_apb_ref", si colectorul de coverage importa scoreboardul; explicatia in engleza: this is a forward type definition used to solve cross dependency between scoreboard and coverage class
 `include "agent_apb.sv"
 `include "agent_intrare.sv"
 //`include "agent_output.sv"
@@ -26,7 +26,7 @@ class mediu_verificare extends uvm_env;
   agent_intrare agent_intrare_din_mediu;//agentul activ care furnizeaza stimuli si monitorizeaza interfata de intrare
   
   //se declara componentele de tip scoreboard (una singura in cazul nostru)
-  //scoreboard IO_scorboard;
+ // scoreboard IO_scorboard;
   
   
   //constructorul clasei
@@ -54,12 +54,12 @@ class mediu_verificare extends uvm_env;
     // se preiau interfetele din baza de date; daca nu se pot prelua interfetele, se va da eroare
     assert(uvm_resource_db#(virtual apb_interface_dut)::read_by_name(
       get_full_name(), "apb_interface_dut", interfata_monitor_apb)) else `uvm_error("MEDIU DE VERIFICARE", "Nu s-a putut prelua din baza de date UVM apb_interface_dut");
-    assert(uvm_resource_db#(virtual intrare_interface_dut)::read_by_name(
-      get_full_name(), "intrare_interface_dut", interfata_monitor_intrare)) else `uvm_error("MEDIU DE VERIFICARE", "Nu s-a putut prelua din baza de date UVM intrare_interface_dut");
+    assert(uvm_resource_db#(virtual input_interface_dut)::read_by_name(
+      get_full_name(), "input_interface_dut", interfata_monitor_intrare)) else `uvm_error("MEDIU DE VERIFICARE", "Nu s-a putut prelua din baza de date UVM input_interface_dut");
 	//conectarea scoreboardului la porturile de date ale agentilor
     
-agent_apb_din_mediu.de_la_monitor_apb.connect(IO_scorboard.port_pentru_datele_de_la_apb);
-agent_intrare_din_mediu.de_la_monitor_intrare.connect(IO_scorboard.port_pentru_datele_de_la_intrare);
+//agent_apb_din_mediu.de_la_monitor_apb.connect(IO_scorboard.port_pentru_datele_de_la_apb);
+//agent_intrare_din_mediu.de_la_monitor_intrare.connect(IO_scorboard.port_pentru_datele_de_la_intrare);
     `uvm_info("MEDIU DE VERIFICARE", "Faza de realizare a conexiunilor s-a terminat", UVM_HIGH);
   endfunction: connect_phase
   
