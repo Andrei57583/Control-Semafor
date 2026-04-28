@@ -100,20 +100,20 @@ module top();
   	end
 
   // se instantiaza DUT-ul, facandu-se legaturile intre semnalele din modulul de top si semnalele acestuia
- /*  my_dut Semafor_control(
+    Semafor_control my_dut(
 	
-  .pclk (pclk),
+  .clk (pclk),
   .rst_n(rst_n),
-  .paddr(paddr),
-  .pwdata(pwdata),
-  .prdata(prdata),
-  .pwrite(pwrite),
+  .Paddr(paddr),
+  .Pwdata(pwdata),
+  .Prdata(prdata),
+  .Pwrite(pwrite),
 
-  .psel(psel),
-  .penable(penable),
+  .Psel(psel),
+  .Penable(penable),
 
-  .pready(pready),
-  .pslverr(pslverr),
+  .Pready(pready),
+  .Pslverr(pslverr),
 
   .semafor_masini(semafor_masini),   // [2]=rosu, [1]=galbe.
   .semafor_pietoni(semafor_pietoni),  // [1]=rosu, [0]=verde
@@ -123,6 +123,6 @@ module top();
   .buton_pietoni (buton_pietoni),  // cerere trecere
   .senzor_lumina (senzor_lumina),  // 1 = intuneric, 0 = lumina
   .ora_curenta ( ora_curenta)
-); */
+); 
 
 endmodule

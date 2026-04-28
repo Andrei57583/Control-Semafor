@@ -30,9 +30,9 @@ class secventa_apb extends uvm_sequence #(tranzactie_apb);
       // generam random toate campurile tranzactiei
       assert(req.randomize() with {
         address inside {[0:3]};       // 4 adrese
-       // data    inside {[0:255]};     // date 8-bit
-       // rd_wr   inside {[0:1]};       // 0=write,1=read
-       // delay_trans inside {[0:10]};  // delay intre tranzactii
+        data    inside {[0:255]};     // date 8-bit
+        rd_wr   inside {[0:1]};       // 0=write,1=read
+        delay_trans inside {[0:10]};  // delay intre tranzactii
       });
 
       `ifdef DEBUG

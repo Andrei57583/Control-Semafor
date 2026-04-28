@@ -38,7 +38,7 @@ output logic [3-1:0] semafor_masini, // MSB red, middle = yellow, LSB = green
 
 output logic [8-1:0] durata_display, //un indicator LED care arata masinilor cat timp mai au de asteptat
 output               lampa         , //lampa care ilumineaza trecerea de pietoni // activ pe senzor_lumina = 0
-output               buzer_pietoni  //buzer pentru persoane cu dizabilitati de vedere //activ pe pieton = 1
+output               buzzer_pietoni  //buzer pentru persoane cu dizabilitati de vedere //activ pe pieton = 1
 );
 
 //task sgsggsggdg//////////////////////////////////////////////////////////////////////////////////////////////////
@@ -48,20 +48,20 @@ reg  [8-1:0]   car_yellow_reg; //1
 reg  [8-1:0]   car_red_reg;    //2
 
 //reg buton_pietoni_intarziat;
-//wire buton_pietoni_apasat;
+wire buton_pietoni_apasat;
 //semnale interne
 
 //reg    pieton_semafor_reg,
 reg pushed_button;
 
-reg [full_cycle -1:0] pushed_button_counter; // for after you push the button
+reg [full_cycle -1:0] push_button_counter; // for after you push the button
 reg [blink_freq -1:0] interminent_counter; //counter for intermitent mode
 reg [full_cycle -1:0] cycle_counter ;   //full transition of the semaphore counter     //count = cycle_counter
 
 //scrierea registrilor prin APB
  always @(posedge clk or negedge rst_n)
     if (~rst_n) begin
-    count <= 'd0;
+  //  count <= 'd0;
     end
     else 
     if(Pwrite == 1 && Psel == 1 && Penable == 0)// suntem in primul tact al tranzactiei de scriere

@@ -50,9 +50,10 @@ class driver_agent_apb extends uvm_driver #(tranzactie_apb);
     // ACCESS Phase
     @(posedge interfata_driverului_pentru_apb.pclk);
     interfata_driverului_pentru_apb.penable <= 1'b1;
-
+`uvm_info("TEST_DEBUG", "inainte de wait pready", UVM_LOW)
     // WAIT pready (APB handshake)
     wait(interfata_driverului_pentru_apb.pready);
+`uvm_info("TEST_DEBUG", "dupa wait pready", UVM_LOW)
     //@(posedge interfata_driverului_pentru_apb.pclk iff interfata_driverului_pentru_apb.pready);
 	
 
