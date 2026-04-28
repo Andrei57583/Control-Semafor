@@ -14,7 +14,7 @@ class tranzactie_intrare extends uvm_sequence_item;
   rand bit        senzor_lumina; //1 = intuneric, 0 = lumina
   rand bit[4:0]   ora_curenta;   // 0 - 23
   
-  
+  constraint ora_c {ora_curenta inside {[0:23]};}
   //constructorul clasei; această funcție este apelată când se creează un obiect al clasei "tranzactie"
   function new(string name = "element_secventaa");//numele dat este ales aleatoriu, si nu mai este folosit in alta parte
     super.new(name);  

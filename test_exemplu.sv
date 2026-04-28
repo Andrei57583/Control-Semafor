@@ -55,6 +55,7 @@ class test_exemplu extends uvm_test;
       //interfetele virtuale sunt folosite pentru a crea conexiunile cu agentii
     uvm_config_db#(virtual input_interface_dut)::set(this, "mediu_de_verificare.agent_intrare_din_mediu.*", "intrare_interface_dut",vif_intrare_dut);
     uvm_config_db#(virtual apb_interface_dut)::set(this, "mediu_de_verificare.agent_apb_din_mediu.*", "apb_interface_dut",vif_apb_dut);
+//uvm_config_db#(virtual output_interface_dut)::set(this, "mediu_de_verificare.agent_apb_din_mediu.*", "apb_interface_dut",vif_apb_dut);
 
     //Se creaza secventele de date de intrare (in cazul de fata avem doar o secventa, deoarece avem doar un agent activ), dandu-se apoi valori aleatoare campurilor declarate cu cuvantul cheie "rand" din interiorul clasei "secventa_intrari"
 
