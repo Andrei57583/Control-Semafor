@@ -23,7 +23,9 @@ class coverage_intrare extends uvm_component;
         bins senzor_zi     = {0};
         bins senzor_noapte = {1};
     }
-    coverpoint p_monitor.starea_preluata_a_intrare.ora_curenta;
+    coverpoint p_monitor.starea_preluata_a_intrare.ora_curenta {
+      bins ore [24];
+    }
 
   endgroup
   
