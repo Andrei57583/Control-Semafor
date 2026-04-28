@@ -30,6 +30,7 @@ class test_exemplu extends uvm_test;
 
   virtual apb_interface_dut vif_apb_dut;
   virtual input_interface_dut vif_intrare_dut;
+  virtual output_interface_dut vif_iesire_dut;
   
    function void start_of_simulation_phase(uvm_phase phase);
     super.start_of_simulation_phase(phase);
@@ -46,8 +47,10 @@ class test_exemplu extends uvm_test;
     //Get virtual IF handle from top_level and pass it to everything in env level
     if (!uvm_config_db#(virtual apb_interface_dut)::get(this, "", "apb_interface_dut", vif_apb_dut))
       `uvm_fatal("TEST", "Nu s-a putut obtine din baza de date UVM tipul de interfata virtuala apb_interface_dut pentru a crea vif_apb_dut")
-    if (!uvm_config_db#(virtual input_interface_dut)::get(this, "", "intrare_interface_dut", vif_intrare_dut))
+    if (!uvm_config_db#(virtual input_interface_dut)::get(this, "", "input_interface_dut", vif_intrare_dut))
       `uvm_fatal("TEST", "Nu s-a putut obtine din baza de date UVM tipul de interfata virtuala intrare_interface_dut pentru a crea vif_intrare_dut")
+    if (!uvm_config_db#(virtual output_interface_dut)::get(this, "", "output_interface_dut", vif_iesire_dut))
+      `uvm_fatal("TEST", "Nu s-a putut obtine din baza de date UVM tipul de interfata virtuala output_interface_dut pentru a crea vif_iesire_dut")
 
       //interfetele virtuale sunt folosite pentru a crea conexiunile cu agentii
     uvm_config_db#(virtual input_interface_dut)::set(this, "mediu_de_verificare.agent_intrare_din_mediu.*", "intrare_interface_dut",vif_intrare_dut);
@@ -114,7 +117,7 @@ class test_exemplu extends uvm_test;
   
   //traficul de pe interfete este resetat
   virtual task apply_reset();
-    vif_apb_dut.rst_n    <= 1;
+    vif_apb_dut.rst_n    <= 0;
     vif_apb_dut.paddr    <= 0;
     vif_apb_dut.penable  <= 0;
     vif_apb_dut.psel     <= 0;
@@ -122,7 +125,7 @@ class test_exemplu extends uvm_test;
     $display("am asertat resetul");
     `endif;
     repeat(15) @(posedge vif_apb_dut.pclk);
-    vif_apb_dut.rst_n <= 0;
+    vif_apb_dut.rst_n <= 1;
     `ifdef DEBUG
     $display("%t am deasertat resetul", $time());
     `endif;

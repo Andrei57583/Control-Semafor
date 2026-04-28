@@ -44,8 +44,8 @@ class monitor_apb extends uvm_monitor;
   virtual task run_phase(uvm_phase phase);
     super.run_phase(phase);
 
-    forever begin
-	while interfata_monitor_apb.psel==0 
+   /* forever begin
+	while (interfata_monitor_apb.psel==0) 
 		begin 
 			starea_preluata_a_apb.delay_trans;
 			@(negedge interfata_monitor_apb.pclk);
@@ -83,7 +83,8 @@ class monitor_apb extends uvm_monitor;
       // evita dublarea tranzactiilor
       @(negedge interfata_monitor_apb.pclk);
 
-    end
+    end */
+	
   endtask
 
 endclass

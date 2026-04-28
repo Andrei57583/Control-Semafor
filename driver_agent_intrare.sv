@@ -11,7 +11,7 @@ class driver_agent_intrare extends uvm_driver #(tranzactie_intrare);
   `uvm_component_utils (driver_agent_intrare)
   
   //este declarata interfata pe care driverul va trimite datele
-  virtual intrare_interface_dut interfata_driverului_pentru_intrare;
+  virtual input_interface_dut interfata_driverului_pentru_intrare;
   
   //constructorul clasei
   function new(string name = "driver_agent_intrare", uvm_component parent = null);
@@ -22,7 +22,7 @@ class driver_agent_intrare extends uvm_driver #(tranzactie_intrare);
   virtual function void build_phase(uvm_phase phase);
     //este apelata mai intai functia build_phase din clasa parinte
     super.build_phase(phase);
-    if (!uvm_config_db#(virtual intrare_interface_dut)::get(this, "", "intrare_interface_dut", interfata_driverului_pentru_intrare))begin
+    if (!uvm_config_db#(virtual input_interface_dut)::get(this, "", "input_interface_dut", interfata_driverului_pentru_intrare))begin
       `uvm_fatal("DRIVER_AGENT_intrare", "Nu s-a putut accesa interfata_intrare")
     end
   endfunction
