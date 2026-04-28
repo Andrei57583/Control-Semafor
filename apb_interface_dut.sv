@@ -134,4 +134,6 @@ interface apb_interface_dut;
       
 endinterface
 
-`endif
+`endif  //pwdata trb sa fie stabila cat write e in desfasurare 
+
+//  dupa reset toate semnalele de control trebuie sa aiba valori
