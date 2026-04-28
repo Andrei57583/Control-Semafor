@@ -5,7 +5,7 @@
 //se includ fisierele la care testul trebuie sa aiba acces
 `include "mediu_verificare.sv"
 `include "secventa_apb.sv"
-`include "secventa_rename.sv"
+`include "secventa_intrare.sv"
 
 class test_exemplu extends uvm_test;
   `uvm_component_utils(test_exemplu)
@@ -22,14 +22,14 @@ class test_exemplu extends uvm_test;
   mediu_verificare mediu_de_verificare;
   
   //se instantiaza secventa folosita de agent_buton si agent_actuator
-  secventa_rename rename_seq;
+  secventa_intrare intrare_seq;
   secventa_apb apb_seq;
   
   
   //se instantiaza interfetele virtuale ale mediului de verificare; acestea vor fi ulterior corelate cu interfetele reale definite in fisierele interfata_intrari_dut si interfata_semafoare
 
   virtual apb_interface_dut vif_apb_dut;
-  virtual rename_interface_dut vif_rename_dut;
+  virtual input_interface_dut vif_intrare_dut;
   
    function void start_of_simulation_phase(uvm_phase phase);
     super.start_of_simulation_phase(phase);
@@ -46,11 +46,11 @@ class test_exemplu extends uvm_test;
     //Get virtual IF handle from top_level and pass it to everything in env level
     if (!uvm_config_db#(virtual apb_interface_dut)::get(this, "", "apb_interface_dut", vif_apb_dut))
       `uvm_fatal("TEST", "Nu s-a putut obtine din baza de date UVM tipul de interfata virtuala apb_interface_dut pentru a crea vif_apb_dut")
-    if (!uvm_config_db#(virtual rename_interface_dut)::get(this, "", "rename_interface_dut", vif_rename_dut))
-      `uvm_fatal("TEST", "Nu s-a putut obtine din baza de date UVM tipul de interfata virtuala rename_interface_dut pentru a crea vif_rename_dut")
+    if (!uvm_config_db#(virtual input_interface_dut)::get(this, "", "intrare_interface_dut", vif_intrare_dut))
+      `uvm_fatal("TEST", "Nu s-a putut obtine din baza de date UVM tipul de interfata virtuala intrare_interface_dut pentru a crea vif_intrare_dut")
 
       //interfetele virtuale sunt folosite pentru a crea conexiunile cu agentii
-    uvm_config_db#(virtual rename_interface_dut)::set(this, "mediu_de_verificare.agent_rename_din_mediu.*", "rename_interface_dut",vif_rename_dut);
+    uvm_config_db#(virtual input_interface_dut)::set(this, "mediu_de_verificare.agent_intrare_din_mediu.*", "intrare_interface_dut",vif_intrare_dut);
     uvm_config_db#(virtual apb_interface_dut)::set(this, "mediu_de_verificare.agent_apb_din_mediu.*", "apb_interface_dut",vif_apb_dut);
 
     //Se creaza secventele de date de intrare (in cazul de fata avem doar o secventa, deoarece avem doar un agent activ), dandu-se apoi valori aleatoare campurilor declarate cu cuvantul cheie "rand" din interiorul clasei "secventa_intrari"
@@ -58,8 +58,8 @@ class test_exemplu extends uvm_test;
     apb_seq = secventa_apb::type_id::create("apb_seq");
     apb_seq.randomize();
 
-    rename_seq = secventa_rename::type_id::create("rename_seq");
-    rename_seq.randomize();
+    intrare_seq = secventa_intrare::type_id::create("intrare_seq");
+    intrare_seq.randomize();
     
   endfunction
   
@@ -92,11 +92,11 @@ class test_exemplu extends uvm_test;
 
       begin 
       `ifdef DEBUG
-        $display("va incepe sa ruleze secventa: rename_seq pentru agentul activ agent_rename");
+        $display("va incepe sa ruleze secventa: intrare_seq pentru agentul activ agent_intrare");
       `endif;
-        rename_seq.start(mediu_de_verificare.agent_rename_din_mediu.sequencer_agent_rename_inst0);
+        intrare_seq.start(mediu_de_verificare.agent_intrare_din_mediu.sequencer_agent_intrare_inst0);
       `ifdef DEBUG
-        $display("s-a terminat de rulat secventa pentru agentul activ agent_rename");
+        $display("s-a terminat de rulat secventa pentru agentul activ agent_intrare");
       `endif;
       
     
@@ -107,8 +107,6 @@ class test_exemplu extends uvm_test;
     vif_apb_dut.psel     <= 0;
     vif_apb_dut.penable  <= 0;
     vif_apb_dut.paddr    <= 0;
-    vif_rename_dut.addr  <= 0;
-    vif_rename_dut.valid <= 0;
     #100//se mai asteapta 100 de unitati de timp inainte sa se dezactiveze martorul de activitate, actiune care va permite simulatorului sa incheie activitatea
 	//se dezactiveaza martorul 
     phase.drop_objection(this);
@@ -120,8 +118,6 @@ class test_exemplu extends uvm_test;
     vif_apb_dut.paddr    <= 0;
     vif_apb_dut.penable  <= 0;
     vif_apb_dut.psel     <= 0;
-    vif_rename_dut.addr  <= 0;
-    vif_rename_dut.valid <= 0;
     `ifdef DEBUG
     $display("am asertat resetul");
     `endif;

@@ -80,6 +80,5 @@ logic reset;
 endinterface
 
 `endif
-// buzzer ul la pietoni se aprinde doar cand e verde la pietoni rosu la masini
-// lampa se aprinde la senzor 
+
 

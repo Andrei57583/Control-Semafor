@@ -5,33 +5,32 @@ class secventa_apb extends uvm_sequence #(tranzactie_apb);
 
   `uvm_object_utils(secventa_apb)
 
-  rand int numarul_de_tranzactii;
-
-  constraint marimea_sirului_c {
-    soft numarul_de_tranzactii inside {[10:15]};
-  }
+rand byte data_param;
+  rand bit[1:0] address_param;
+ rand bit rd_wr_param;        // 0 = write, 1 = read
+  
 
   function new(string name="secventa_apb");
     super.new(name);
   endfunction
 
-  function void post_randomize();
+/*  function void post_randomize();
     $display("SECVENTA_apb: Marimea sirului de tranzactii=%0d", numarul_de_tranzactii);
-  endfunction
+  endfunction*/
 
   virtual task body();
     `uvm_info("SECVENTA_apb", $sformatf("A inceput secventa cu dimensiunea de %-2d elemente", numarul_de_tranzactii), UVM_NONE)
 
-    for (int i=0; i< numarul_de_tranzactii; i++) begin
+    
       req = tranzactie_apb::type_id::create("req");
 
       start_item(req);
 
       // generam random toate campurile tranzactiei
       assert(req.randomize() with {
-        address inside {[0:3]};       // 4 adrese
-       // data    inside {[0:255]};     // date 8-bit
-       // rd_wr   inside {[0:1]};       // 0=write,1=read
+        address == address_param;       // 4 adrese
+        data  ==  data_param ;     // date 8-bit
+       rd_wr == rd_wr_param;       // 0=write,1=read
        // delay_trans inside {[0:10]};  // delay intre tranzactii
       });
 
@@ -41,7 +40,7 @@ class secventa_apb extends uvm_sequence #(tranzactie_apb);
       `endif
 
       finish_item(req);
-    end
+
 
     `uvm_info("SECVENTA_apb", $sformatf("S-au generat toate cele %0d tranzactii", numarul_de_tranzactii), UVM_LOW)
   endtask
