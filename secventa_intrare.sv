@@ -42,7 +42,11 @@ class secventa_intrare extends uvm_sequence #(tranzactie_intrare);
       //se incepe crearea tranzactiei
       start_item(req);
       //se genereaza random valori in intervalele de interes pt fiecare intrare 
-      assert (req.randomize() with {buton_pietoni == {0}; senzor_lumina == {1}; ora_curenta == {17}});
+      assert (req.randomize() with {
+        buton_pietoni == 0; 
+        senzor_lumina == 1; 
+        ora_curenta == 17;
+      });
       `ifdef DEBUG
       `uvm_info("SECVENTA_intrare", $sformatf("La timpul %0t s-a generat elementul %0d cu informatiile:\n ", $time, i), UVM_LOW)
         req.afiseaza_informatia_tranzactiei();
@@ -58,7 +62,11 @@ class secventa_intrare extends uvm_sequence #(tranzactie_intrare);
       //se incepe crearea tranzactiei
       start_item(req);
       //se genereaza random valori in intervalele de interes pt fiecare intrare 
-      assert (req.randomize() with {buton_pietoni == {0}; senzor_lumina == {1}; ora_curenta == {17}});
+      assert (req.randomize() with {
+        buton_pietoni == 0; 
+        senzor_lumina == 1; 
+        ora_curenta == 17;
+      });
       `ifdef DEBUG
       `uvm_info("SECVENTA_intrare", $sformatf("La timpul %0t s-a generat elementul %0d cu informatiile:\n ", $time, i), UVM_LOW)
         req.afiseaza_informatia_tranzactiei();
@@ -74,7 +82,11 @@ class secventa_intrare extends uvm_sequence #(tranzactie_intrare);
       //se incepe crearea tranzactiei
       start_item(req);
       //se genereaza random valori in intervalele de interes pt fiecare intrare 
-      assert (req.randomize() with {buton_pietoni == {0}; senzor_lumina == {1}; ora_curenta == {17}});
+      assert (req.randomize() with {
+        buton_pietoni == 0; 
+        senzor_lumina == 1; 
+        ora_curenta == 17;
+        });
       `ifdef DEBUG
       `uvm_info("SECVENTA_intrare", $sformatf("La timpul %0t s-a generat elementul %0d cu informatiile:\n ", $time, i), UVM_LOW)
         req.afiseaza_informatia_tranzactiei();
