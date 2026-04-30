@@ -15,6 +15,7 @@ import uvm_pkg::*;
 `include "input_interface_dut.sv"
 `include "output_interface_dut.sv"
 `include "test_exemplu.sv"
+`include "test_buton_pietoni.sv"
 `include "design.sv"
 
 // Code your testbench here
@@ -96,7 +97,7 @@ module top();
       uvm_config_db#(virtual output_interface_dut)::set(null, "*", "output_interface_dut", intf_output);
 
       //se ruleaza testul dorit
-      run_test("test_exemplu");
+      run_test("test_buton_pietoni");
   	end
 
   // se instantiaza DUT-ul, facandu-se legaturile intre semnalele din modulul de top si semnalele acestuia

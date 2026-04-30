@@ -10,7 +10,7 @@ class tranzactie_apb extends uvm_sequence_item;
   rand bit rd_wr;        // 0 = write, 1 = read
   rand int delay_trans;
 
-  constraint delay_c { delay_trans inside {[0:10]}; }
+  constraint delay_c {soft delay_trans inside {[0:10]}; }
 
   function new(string name = "tranzactie_apb");
     super.new(name);
