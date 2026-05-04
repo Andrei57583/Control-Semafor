@@ -14,8 +14,9 @@ import uvm_pkg::*;
 `include "apb_interface_dut.sv"
 `include "input_interface_dut.sv"
 `include "output_interface_dut.sv"
-`include "test_exemplu.sv"
-`include "test_buton_pietoni.sv"
+//`include "test_exemplu.sv"
+//`include "test_buton_pietoni.sv"
+`include "test_intermitent.sv"
 `include "design.sv"
 
 // Code your testbench here
@@ -97,7 +98,9 @@ module top();
       uvm_config_db#(virtual output_interface_dut)::set(null, "*", "output_interface_dut", intf_output);
 
       //se ruleaza testul dorit
-      run_test("test_buton_pietoni");
+    //  run_test("test_buton_pietoni");
+      run_test("test_intermitent");
+
   	end
 
   // se instantiaza DUT-ul, facandu-se legaturile intre semnalele din modulul de top si semnalele acestuia
@@ -116,7 +119,7 @@ module top();
   .Pready(pready),
   .Pslverr(pslverr),
 
-  .semafor_masini(semafor_masini),   // [2]=rosu, [1]=galbe.
+  .semafor_masini(semafor_masini),   // [2]=rosu, [1]=galben, [0]=verde
   .semafor_pietoni(semafor_pietoni),  // [1]=rosu, [0]=verde
   .lampa(lampa),
   .buzzer_pietoni(buzzer_pietoni),
