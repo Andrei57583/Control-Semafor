@@ -16,7 +16,8 @@ import uvm_pkg::*;
 `include "output_interface_dut.sv"
 //`include "test_exemplu.sv"
 //`include "test_buton_pietoni.sv"
-`include "test_intermitent.sv"
+//`include "test_intermitent.sv"
+`include "test_senzor_lumina.sv"
 `include "design.sv"
 
 // Code your testbench here
@@ -99,7 +100,8 @@ module top();
 
       //se ruleaza testul dorit
     //  run_test("test_buton_pietoni");
-      run_test("test_intermitent");
+    //  run_test("test_intermitent");
+      run_test("test_senzor_lumina");
 
   	end
 
