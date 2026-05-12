@@ -106,6 +106,7 @@ class test_ora_actuala extends uvm_test;
     
       end
     join
+    `uvm_info(get_type_name(), "dupa secvente", UVM_NONE)
     //dupa ce s-au terminat secventele care trimit stimuli DUT-ului, toate semnalele de intrare se pun in 0
     @(posedge vif_apb_dut.pclk);
     vif_apb_dut.psel     <= 0;
@@ -113,8 +114,8 @@ class test_ora_actuala extends uvm_test;
     vif_apb_dut.paddr    <= 0;
     #100//se mai asteapta 100 de unitati de timp inainte sa se dezactiveze martorul de activitate, actiune care va permite simulatorului sa incheie activitatea
 	//se dezactiveaza martorul 
-    #1us;
-    `uvm_info(get_type_name(), "dupa wait", UVM_NONE)
+    //#1us;
+    `uvm_info(get_type_name(), "dupa tranzactii", UVM_NONE)
     phase.drop_objection(this);
     endtask
   

@@ -37,7 +37,7 @@ class secventa_intrare_buton_pieton extends uvm_sequence #(tranzactie_intrare);
    press_release_button();
     `uvm_info("secventa_intrare_buton_pieton", $sformatf("S-au generat toate cele %0d tranzactii", numarul_de_tranzactii), UVM_LOW)
   endtask
-
+/* 
  task parsing_day(int durata_ora);
   for (int i=0;i<24;i++)begin
     button_sensor_hour(0, 0, i);
@@ -45,12 +45,12 @@ class secventa_intrare_buton_pieton extends uvm_sequence #(tranzactie_intrare);
       nop(0,i);
   end
   endtask
-
+*/
   task press_release_button();
   button_sensor_hour(1, 0, 12);
   button_sensor_hour(0, 0, 12);
   endtask
-
+/*
    task nop(bit senzor, bit[4:0] ora );
       req = tranzactie_intrare::type_id::create("req");
       
@@ -72,7 +72,7 @@ class secventa_intrare_buton_pieton extends uvm_sequence #(tranzactie_intrare);
 
 
   endtask
-
+*/
   task button_sensor_hour(bit buton, bit senzor, bit[4:0] ora );
       req = tranzactie_intrare::type_id::create("req");
       

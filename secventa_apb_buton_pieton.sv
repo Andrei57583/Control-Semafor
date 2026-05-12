@@ -47,7 +47,7 @@ class secventa_apb_buton_pieton extends uvm_sequence #(tranzactie_apb);
       });
 
       `ifdef DEBUG
-        `uvm_info("secventa_apb_buton_pieton", $sformatf("Tranzactia de scriere %0d generata la timpul %0t", i, $time), UVM_LOW)
+        `uvm_info("secventa_apb_buton_pieton", $sformatf("Tranzactia de scriere generata la timpul %0t", $time), UVM_LOW)
         req.afiseaza_informatia_tranzactiei();
       `endif
 
@@ -70,7 +70,7 @@ class secventa_apb_buton_pieton extends uvm_sequence #(tranzactie_apb);
       });
 
       `ifdef DEBUG
-        `uvm_info("secventa_apb_buton_pieton", $sformatf("Tranzactia de citire %0d generata la timpul %0t", i, $time), UVM_LOW)
+        `uvm_info("secventa_apb_buton_pieton", $sformatf("Tranzactia de citire generata la timpul %0t", $time), UVM_LOW)
         req.afiseaza_informatia_tranzactiei();
       `endif
 

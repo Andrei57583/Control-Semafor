@@ -41,16 +41,17 @@ class secventa_intrare_ora_actuala extends uvm_sequence #(tranzactie_intrare);
  task parsing_day(int durata_ora);
   for (int i=0;i<24;i++)begin
     button_sensor_hour(0, 0, i);
+    `uvm_info("secventa_intrare_ora_actuala", $sformatf("urmatoarea ora este %0d", i), UVM_LOW);
     for (int j= 0;j<durata_ora;j++)
       nop(0,i);
   end
   endtask
-
+/*
   task press_release_button();
   button_sensor_hour(1, 0, 12);
   button_sensor_hour(0, 0, 12);
   endtask
-
+*/
    task nop(bit senzor, bit[4:0] ora );
       req = tranzactie_intrare::type_id::create("req");
       
@@ -63,7 +64,7 @@ class secventa_intrare_ora_actuala extends uvm_sequence #(tranzactie_intrare);
         ora_curenta == ora;
       });
       `ifdef DEBUG
-      `uvm_info("secventa_intrare_ora_actuala", $sformatf("La timpul %0t s-a generat elementul %0d cu informatiile:\n ", $time, i), UVM_LOW)
+      `uvm_info("secventa_intrare_ora_actuala", $sformatf("La timpul %0t s-a generat elementul cu informatiile:\n ", $time), UVM_LOW)
         req.afiseaza_informatia_tranzactiei();
       `endif;
       
@@ -85,7 +86,7 @@ class secventa_intrare_ora_actuala extends uvm_sequence #(tranzactie_intrare);
         ora_curenta == ora;
       });
       `ifdef DEBUG
-      `uvm_info("secventa_intrare_ora_actuala", $sformatf("La timpul %0t s-a generat elementul %0d cu informatiile:\n ", $time, i), UVM_LOW)
+      `uvm_info("secventa_intrare_ora_actuala", $sformatf("La timpul %0t s-a generat elementul cu informatiile:\n ", $time), UVM_LOW)
         req.afiseaza_informatia_tranzactiei();
       `endif;
       
