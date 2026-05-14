@@ -39,24 +39,24 @@ output logic [10-1:0] durata_display, //un indicator LED care arata masinilor ca
 output logic          lampa         , //lampa care ilumineaza trecerea de pietoni // activ pe senzor_lumina = 0
 output logic          buzzer_pietoni  //buzer pentru persoane cu dizabilitati de vedere //activ pe pieton = 1
 );
-
-//task sgsggsggdg//////////////////////////////////////////////////////////////////////////////////////////////////
 //registri acceesibili prin APB                  // pentru reconfigurare/ setari
 reg  [8-1:0]   car_green_reg;  //0
 reg  [8-1:0]   car_yellow_reg; //1
 reg  [8-1:0]   car_red_reg;    //2
 
 
-//reg    pieton_semafor_reg,
 reg start_cycle_counter;
 reg [10-1:0] cycle_counter ;   //full transition of the semaphore counter     //count = cycle_counter
 reg [10-1:0] full_cycle;
+reg [10-1:0] display_counter;
 
 assign full_cycle = car_green_reg + car_yellow_reg + car_red_reg;
 
-//reg [full_cycle -1:0] pushed_button_counter; // for after you push the button  ???????
+
 reg [5-1:0] interminent_counter; //counter for intermitent mode
-reg                   intermitent_mode;
+reg         intermitent_mode;    // enable signal that prevents the semaphore cycle to function
+
+
 
  //scrierea registrilor prin APB
   always @(posedge clk or negedge rst_n)                    // setarii implicite
@@ -112,10 +112,6 @@ reg                   intermitent_mode;
  	else if(Psel == 1 && Penable == 0 )
  	Pready <= 'b1;
 
-//endtask////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ========================= apasarea butonului si tranzitii =========================
-
-
 
 // -----------------------------------------button press activation -----------------------------------------
 always @(posedge clk or negedge rst_n) begin // when buton_pietoni is active (button pressed) start_cycle_counter becomes HIGH until cycle_counter reches it s max value (full_cycle)
@@ -132,12 +128,17 @@ end
 // ----------------------------------------------cycle counter ----------------------------------------------
 always@(posedge clk or negedge rst_n) 
 begin
-   if(~rst_n)    
-      cycle_counter <= 0;
+   if(~rst_n)begin  
+      cycle_counter   <= 0;
+      display_counter <= full_cycle;
+      end
     else if(start_cycle_counter == 1) begin //sem car red // counter starts
       cycle_counter <= cycle_counter + 1'b1;
-      if (cycle_counter == full_cycle)
+      display_counter <= display_counter - 1'b1;
+      if (cycle_counter == full_cycle)begin
         cycle_counter <= 0;
+        display_counter <= full_cycle;
+        end
     end
 end
 // --------------------------------------------- cycle counter ----------------------------------------------
@@ -172,21 +173,30 @@ begin
 	end
 end
   //------------------------------------------- semaphore transitions -----------------------------------------
-//car_red_reg
   
 
  
-
+//wire time_green;
+//wire time_yellow;
+//wire time_red;
+//
+//assign time_green = display_counter - (full_cycle - car_green_reg);
+//assign time_yellow = display_counter - (full_cycle - car_yellow_reg);
+//assign time_red = display_counter - (full_cycle - car_red_reg);
 
   // ========================= display numbers =========================
-  always@(posedge clk) begin
-  if(cycle_counter > car_red_reg)
-    durata_display <= full_cycle - (car_green_reg + car_yellow_reg);
+  always@(posedge clk) 
+  begin
+    if (~rst_n) begin
+    durata_display <= 'b0;
   end
-
+   if(cycle_counter > car_yellow_reg && ~intermitent_mode)
+    durata_display <= display_counter;
+  
+end
   
   // ========================= buzzer =========================
-always@(posedge clk or negedge rst_n) begin
+always@(posedge clk or negedge rst_n)begin
   if (~rst_n) begin
     buzzer_pietoni <= 'b0;
   end
@@ -209,7 +219,6 @@ end
   // ========================= lumini =========================
   
   // ========================= intermitent intre orele xx si XX =========================
-  
 always@(posedge clk)
 begin
   if (~rst_n)
@@ -218,7 +227,7 @@ begin
     semafor_masini     <= 'b000;  // semafor off on all colors
     intermitent_mode <= 'b0;
   end 
-  else if(ora_curenta >= start_intermitent_mode && ora_curenta < stop_intermitent_mode && cycle_counter == 0)
+  else if(ora_curenta >= start_intermitent_mode && ora_curenta < stop_intermitent_mode && cycle_counter == 'b0)
   begin
     intermitent_mode <= 'b1;
     interminent_counter <= interminent_counter + 1;
