@@ -3,7 +3,6 @@
 
 //descriere:
 
-//=================durata display
 //===== car green ================= car yellow ==== car red ============================ car green ===
 //==== human red === human button============================human green ==== human red ==============
 module Semafor_control #(
@@ -11,14 +10,11 @@ module Semafor_control #(
 parameter start_intermitent_mode = 3, //hour where intermitent_mode starts
 parameter stop_intermitent_mode  = 6, //hour where intermitent_mode ends
 parameter blink_freq             = 10 //frequency of the yellow bulb blink
-
-//parameter full_cycle             = 20 //MUST be less than 256 // timp incare butonul nu mai ia valori dupa apasarea butonului si dureaza pana cand rosu se schimba in verde semafor masina
 )(
-
 input          clk         ,
 input          rst_n       ,
 
-input buton_pietoni        , // apasat de pietoni, dupa --N-- sec culoarea se schimba din Rosu in verde pe semafor pieton
+input buton_pietoni        , // apasat de pietoni, dupa "car_green_reg" sec culoarea se schimba din Rosu in verde pe semafor pieton
 input senzor_lumina        , // senzor de lumina
 input [5-1:0] ora_curenta  , // la o anumita ora intra in intermitent
 
@@ -44,11 +40,15 @@ reg  [8-1:0]   car_green_reg;  //0
 reg  [8-1:0]   car_yellow_reg; //1
 reg  [8-1:0]   car_red_reg;    //2
 
-
-reg start_cycle_counter;
+reg start_cycle_counter;       // semnalul care porneste ciclul
 reg [10-1:0] cycle_counter ;   //full transition of the semaphore counter     //count = cycle_counter
-reg [10-1:0] full_cycle;
+reg [10-1:0] full_cycle;       //durata complecta a ciclului
 reg [10-1:0] display_counter;
+
+reg buton_pietoni_Prev;
+reg buton_pietoni_en; //   1/2 conditie pentru pornirea ciclului
+reg buton_pietoni_delay_1;
+reg buton_pietoni_delay_2; // 2/2 conditie pentru pornirea ciclului 
 
 assign full_cycle = car_green_reg + car_yellow_reg + car_red_reg;
 
@@ -111,21 +111,38 @@ reg         intermitent_mode;    // enable signal that prevents the semaphore cy
  	  Pready <= 0;
  	else if(Psel == 1 && Penable == 0 )
  	Pready <= 'b1;
+  
+// \/----------------------falling edge activation of button ----------------------\/
+always_ff @(posedge clk)begin // falling edge detector - cycle starts only when the buton is released
+  buton_pietoni_Prev <= buton_pietoni;
+  buton_pietoni_en <= (!buton_pietoni && buton_pietoni_Prev);
+  end
+ always @(posedge clk or negedge rst_n) begin // delaying the buton signal by 2 clock periods so we can implement an AND gate between buton_pietoni_delay_2 and buton_pietoni_en to start the cycle counter
+  buton_pietoni_delay_1 <= buton_pietoni;
+  buton_pietoni_delay_2 <= buton_pietoni_delay_1;
+end 
+// /\---------------------- falling edge activation of button ----------------------/\
 
-
-// -----------------------------------------button press activation -----------------------------------------
+// \/---------------------- button press activation ----------------------\/
 always @(posedge clk or negedge rst_n) begin // when buton_pietoni is active (button pressed) start_cycle_counter becomes HIGH until cycle_counter reches it s max value (full_cycle)
   if (!rst_n)
     start_cycle_counter <= 1'b0;
 
-  else if (buton_pietoni)
+  else if (buton_pietoni_delay_2 && buton_pietoni_en)
     start_cycle_counter <= 1'b1; 
     
   else if(cycle_counter == full_cycle)
     start_cycle_counter <= 1'b0;
 end
-// -----------------------------------------button press activation -----------------------------------------
-// ----------------------------------------------cycle counter ----------------------------------------------
+// /\---------------------- button press activation ----------------------/\
+
+always@(posedge clk)
+begin
+  if(start_cycle_counter)
+    buton_pietoni_delay_2 <= 'bx;
+end
+
+// \/---------------------- cycle counter ----------------------\/
 always@(posedge clk or negedge rst_n) 
 begin
    if(~rst_n)begin  
@@ -141,12 +158,8 @@ begin
         end
     end
 end
-// --------------------------------------------- cycle counter ----------------------------------------------
-//------------------------------------------- semaphore transitions -----------------------------------------
-  // assign car_green_reg = 3; test
-  //assign car_yellow_reg = 7;   
-  // assign car_red_reg = 10;
-   
+// /\---------------------- cycle counter ----------------------/\
+// \/------------------ semaphore transitions ------------------\/  
 always@(posedge clk or negedge rst_n) 
 begin 
     if (~rst_n) begin
@@ -172,19 +185,9 @@ begin
     semafor_pietoni <= 'b10;
 	end
 end
-  //------------------------------------------- semaphore transitions -----------------------------------------
-  
+// /\------------------ semaphore transitions ------------------/\
 
- 
-//wire time_green;
-//wire time_yellow;
-//wire time_red;
-//
-//assign time_green = display_counter - (full_cycle - car_green_reg);
-//assign time_yellow = display_counter - (full_cycle - car_yellow_reg);
-//assign time_red = display_counter - (full_cycle - car_red_reg);
-
-  // ========================= display numbers =========================
+// \/-------------------- display counter --------------------\/
   always@(posedge clk) 
   begin
     if (~rst_n) begin
@@ -194,8 +197,9 @@ end
     durata_display <= display_counter;
   
 end
-  
-  // ========================= buzzer =========================
+// /\-------------------- display counter --------------------/\
+
+// \/-------------------- buzzer --------------------\/
 always@(posedge clk or negedge rst_n)begin
   if (~rst_n) begin
     buzzer_pietoni <= 'b0;
@@ -205,8 +209,9 @@ always@(posedge clk or negedge rst_n)begin
     else if (cycle_counter == 0)
       buzzer_pietoni <= 'b0;
 end
-  // ========================= buzzer =========================
-  // ========================= lumini =========================
+// /\-------------------- buzzer --------------------/\
+
+// \/-------------------- lumina --------------------\/
 always@(posedge clk or negedge rst_n)begin
   if (~rst_n) begin
     lampa          <= 'b0;
@@ -216,44 +221,48 @@ always@(posedge clk or negedge rst_n)begin
     else if (~senzor_lumina)
       lampa <= 'b0; 
 end
-  // ========================= lumini =========================
+// /\-------------------- lumina --------------------/\
   
-  // ========================= intermitent intre orele xx si XX =========================
+// \/-------------------- ignora butonul in mod intermitent ----------------------\/
+always@(posedge clk)
+begin
+  if(intermitent_mode)
+    start_cycle_counter <= 'bx;
+end
+// /\-------------------- ignora butonul in mod intermitent ----------------------/\
+// \/-------------------- intermitent intre orele xx si XX ----------------------\/    
 always@(posedge clk)
 begin
   if (~rst_n)
   begin
     interminent_counter <= 0;
-    semafor_masini     <= 'b000;  // semafor off on all colors
+    semafor_masini     <= 'b000;  // semafor car     off on all colors
+    semafor_pietoni    <= 'b00;  // semafor pietoni off on all colors
     intermitent_mode <= 'b0;
-  end 
+  end    // activare intre       ora            si                      ora            daca ciclul s-a oprit
   else if(ora_curenta >= start_intermitent_mode && ora_curenta < stop_intermitent_mode && cycle_counter == 'b0)
   begin
     intermitent_mode <= 'b1;
     interminent_counter <= interminent_counter + 1;
 
     if (interminent_counter % 2 == 1)
-        semafor_masini <= 'b010; 
+      begin
+        semafor_masini  <= 'b010; 
+        semafor_pietoni <= 'b00;
+      end
     else 
-        semafor_masini <= 'b000;
+      begin               
+        semafor_masini  <= 'b000;
+        semafor_pietoni <= 'b00;
+      end
   end
     if(~(ora_curenta >= start_intermitent_mode && ora_curenta < stop_intermitent_mode && cycle_counter == 0))
     intermitent_mode <= 'b0;
 end 
-  // ========================= intermitent intre orele xx si XX =========================     
+// /\-------------------- intermitent intre orele xx si XX ----------------------/\  
 endmodule
 
-//apasarea butonului in mod intermitent ar trebui ignorata
-
-//display time
-
-//semafor pietoni inchis in mod intermitent
-
-//button activ pe falling edge
-
-//spatiu intre tranzitia de la car verde la car rosu
-
-
+                                    //graveyard of past ideas
 
   //counter descrescator, deoarece daca apasam butonul count numara doar pana la 1, porneste counterul care tine butonul in 1
 //always@(posedge clk or negedge rst_n) 
@@ -285,3 +294,17 @@ endmodule
 //    
 //   // assign Data = (buton == 1'b1) ? (car_yellow_reg || car_red_reg : {(n){1'bz}};
 //end
+
+//wire time_green;
+//wire time_yellow;
+//wire time_red;
+//
+//assign time_green = display_counter - (full_cycle - car_green_reg);
+//assign time_yellow = display_counter - (full_cycle - car_yellow_reg);
+//assign time_red = display_counter - (full_cycle - car_red_reg);
+
+  // assign car_green_reg = 3; test
+  //assign car_yellow_reg = 7;   
+  // assign car_red_reg = 10;
+  
+  //parameter full_cycle             = 20 //MUST be less than 256 // timp incare butonul nu mai ia valori dupa apasarea butonului si dureaza pana cand rosu se schimba in verde semafor masina
