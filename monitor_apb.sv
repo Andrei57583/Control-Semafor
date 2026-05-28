@@ -46,7 +46,7 @@ class monitor_apb extends uvm_monitor;
     forever begin
 	while interfata_monitor_apb.psel==0 
 		begin 
-			starea_preluata_a_apb.delay_trans;
+			starea_preluata_a_apb.delay_trans++;
 			@(negedge interfata_monitor_apb.pclk);
 		end
       // astept tranzactie valida APB
