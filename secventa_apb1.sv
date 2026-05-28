@@ -3,7 +3,7 @@
 
 class secventa_apb extends uvm_sequence #(tranzactie_apb);
 
-  `uvm_object_utils(secventa_apb)
+  `uvm_object_utils(secventa_apb) // Register the fixed APB sequence in the UVM factory
 
   function new(string name = "secventa_apb");
     super.new(name);
@@ -12,122 +12,95 @@ class secventa_apb extends uvm_sequence #(tranzactie_apb);
   virtual task body();
 
     `uvm_info("SECVENTA_APB",
-              "A inceput scenariul fix de verificare APB",
+              "The fixed APB verification scenario has started",
               UVM_NONE)
 
-    // =====================================================
-    // TRANZACTIA 1 - WRITE in registrul pentru verde masini
-    // Adresa 0 -> car_green_reg
-    // =====================================================
-    req = tranzactie_apb::type_id::create("write_green");
+    req = tranzactie_apb::type_id::create("write_green"); // Create WRITE transaction for the green time register
 
     start_item(req);
 
-    req.address     = 0;
-    req.data        = 8'h11;
-    req.rd_wr       = 0; // WRITE
-    req.delay_trans = 2;
+    req.address     = 0; // Address 0 corresponds to the green time register
+    req.data        = 8'h11; // Value written into the register
+    req.rd_wr       = 0; // WRITE operation
+    req.delay_trans = 2; // Delay before sending the transaction
 
     finish_item(req);
 
 
-    // =====================================================
-    // TRANZACTIA 2 - WRITE in registrul pentru galben masini
-    // Adresa 1 -> car_yellow_reg
-    // =====================================================
-    req = tranzactie_apb::type_id::create("write_yellow");
+    req = tranzactie_apb::type_id::create("write_yellow"); // Create WRITE transaction for the yellow time register
 
     start_item(req);
 
-    req.address     = 1;
-    req.data        = 8'h22;
-    req.rd_wr       = 0; // WRITE
-    req.delay_trans = 3;
+    req.address     = 1; // Address 1 corresponds to the yellow time register
+    req.data        = 8'h22; // Value written into the register
+    req.rd_wr       = 0; // WRITE operation
+    req.delay_trans = 3; // Delay before sending the transaction
 
     finish_item(req);
 
 
-    // =====================================================
-    // TRANZACTIA 3 - WRITE in registrul pentru rosu masini
-    // Adresa 2 -> car_red_reg
-    // =====================================================
-    req = tranzactie_apb::type_id::create("write_red");
+    req = tranzactie_apb::type_id::create("write_red"); // Create WRITE transaction for the red time register
 
     start_item(req);
 
-    req.address     = 2;
-    req.data        = 8'h33;
-    req.rd_wr       = 0; // WRITE
-    req.delay_trans = 1;
+    req.address     = 2; // Address 2 corresponds to the red time register
+    req.data        = 8'h33; // Value written into the register
+    req.rd_wr       = 0; // WRITE operation
+    req.delay_trans = 1; // Delay before sending the transaction
 
     finish_item(req);
 
 
-    // =====================================================
-    // TRANZACTIA 4 - READ din registrul pentru verde masini
-    // Se verifica daca valoarea scrisa anterior poate fi citita
-    // =====================================================
-    req = tranzactie_apb::type_id::create("read_green");
+    req = tranzactie_apb::type_id::create("read_green"); // Create READ transaction for the green time register
 
     start_item(req);
 
-    req.address     = 0;
-    req.data        = 8'h00;
-    req.rd_wr       = 1; // READ
-    req.delay_trans = 1;
+    req.address     = 0; // Read back the value from address 0
+    req.data        = 8'h00; // Data is not used for READ transactions
+    req.rd_wr       = 1; // READ operation
+    req.delay_trans = 1; // Delay before sending the transaction
 
     finish_item(req);
 
 
-    // =====================================================
-    // TRANZACTIA 5 - READ din registrul pentru galben masini
-    // =====================================================
-    req = tranzactie_apb::type_id::create("read_yellow");
+    req = tranzactie_apb::type_id::create("read_yellow"); // Create READ transaction for the yellow time register
 
     start_item(req);
 
-    req.address     = 1;
-    req.data        = 8'h00;
-    req.rd_wr       = 1; // READ
-    req.delay_trans = 1;
+    req.address     = 1; // Read back the value from address 1
+    req.data        = 8'h00; // Data is not used for READ transactions
+    req.rd_wr       = 1; // READ operation
+    req.delay_trans = 1; // Delay before sending the transaction
 
     finish_item(req);
 
 
-    // =====================================================
-    // TRANZACTIA 6 - READ din registrul pentru rosu masini
-    // =====================================================
-    req = tranzactie_apb::type_id::create("read_red");
+    req = tranzactie_apb::type_id::create("read_red"); // Create READ transaction for the red time register
 
     start_item(req);
 
-    req.address     = 2;
-    req.data        = 8'h00;
-    req.rd_wr       = 1; // READ
-    req.delay_trans = 1;
+    req.address     = 2; // Read back the value from address 2
+    req.data        = 8'h00; // Data is not used for READ transactions
+    req.rd_wr       = 1; // READ operation
+    req.delay_trans = 1; // Delay before sending the transaction
 
     finish_item(req);
 
 
-    // =====================================================
-    // TRANZACTIA 7 - Acces la adresa invalida
-    // Adresa 3 nu corespunde unui registru valid
-    // Aici se verifica semnalizarea erorii PSLVERR
-    // =====================================================
-    req = tranzactie_apb::type_id::create("invalid_address");
+    req = tranzactie_apb::type_id::create("invalid_address"); // Create transaction for an invalid APB address
 
     start_item(req);
 
-    req.address     = 3;
-    req.data        = 8'h44;
-    req.rd_wr       = 0; // WRITE
-    req.delay_trans = 4;
+    req.address     = 3; // Address 3 is used to check invalid address behavior
+    req.data        = 8'h44; // Test value used for the invalid access
+    req.rd_wr       = 0; // WRITE operation
+    req.delay_trans = 4; // Delay before sending the transaction
 
     finish_item(req);
 
 
     `uvm_info("SECVENTA_APB",
-              "Scenariul fix de verificare APB a fost transmis",
+              "The fixed APB verification scenario was sent",
               UVM_NONE)
 
   endtask

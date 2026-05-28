@@ -1,48 +1,49 @@
-`ifndef __input_apb_sequence
-`define __input_apb_sequence
+`ifndef __directed_apb_sequence
+`define __directed_apb_sequence
 
-class secventa_apb extends uvm_sequence #(tranzactie_apb);
+class secventa_tranzactie_directionata extends uvm_sequence #(tranzactie_apb);
 
-  `uvm_object_utils(secventa_apb)
+  `uvm_object_utils(secventa_tranzactie_directionata) // Register the directed APB sequence in the UVM factory
 
-rand byte data_param;
-  rand bit[1:0] address_param;
- rand bit rd_wr_param;        // 0 = write, 1 = read
-  
+  rand byte data_param;
+  rand bit [1:0] address_param;
+  rand bit rd_wr_param; // 0 = WRITE, 1 = READ
 
-  function new(string name="secventa_apb");
+  function new(string name = "secventa_tranzactie_directionata");
     super.new(name);
   endfunction
 
-/*  function void post_randomize();
-    $display("SECVENTA_apb: Marimea sirului de tranzactii=%0d", numarul_de_tranzactii);
-  endfunction*/
-
   virtual task body();
-    `uvm_info("SECVENTA_apb", $sformatf("A inceput secventa cu dimensiunea de %-2d elemente", numarul_de_tranzactii), UVM_NONE)
 
-    
-      req = tranzactie_apb::type_id::create("req");
+    `uvm_info("SECVENTA_APB_DIRECTED",
+      "The directed APB sequence has started",
+      UVM_NONE)
 
-      start_item(req);
+    req = tranzactie_apb::type_id::create("req"); // Create one APB transaction
 
-      // generam random toate campurile tranzactiei
-      assert(req.randomize() with {
-        address == address_param;       // 4 adrese
-        data  ==  data_param ;     // date 8-bit
-       rd_wr == rd_wr_param;       // 0=write,1=read
-       // delay_trans inside {[0:10]};  // delay intre tranzactii
-      });
+    start_item(req);
 
-      `ifdef DEBUG
-        `uvm_info("SECVENTA_apb", $sformatf("Tranzactia %0d generata la timpul %0t", i, $time), UVM_LOW)
-        req.afiseaza_informatia_tranzactiei();
-      `endif
+    assert(req.randomize() with {
+      address == address_param; // Use the address received as parameter
+      data    == data_param; // Use the data received as parameter
+      rd_wr   == rd_wr_param; // Use the operation type received as parameter
+      // delay_trans inside {[0:10]}; // Optional delay between transactions
+    });
 
-      finish_item(req);
+    `ifdef DEBUG
+      `uvm_info("SECVENTA_APB_DIRECTED",
+        $sformatf("Directed transaction generated at time %0t", $time),
+        UVM_LOW)
 
+      req.afiseaza_informatia_tranzactiei();
+    `endif
 
-    `uvm_info("SECVENTA_apb", $sformatf("S-au generat toate cele %0d tranzactii", numarul_de_tranzactii), UVM_LOW)
+    finish_item(req);
+
+    `uvm_info("SECVENTA_APB_DIRECTED",
+      "The directed APB transaction was generated",
+      UVM_LOW)
+
   endtask
 
 endclass

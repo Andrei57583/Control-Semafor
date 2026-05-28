@@ -3,17 +3,20 @@
 
 class tranzactie_apb extends uvm_sequence_item;
   
-  `uvm_object_utils(tranzactie_apb)
+  `uvm_object_utils(tranzactie_apb) // Register the transaction in the UVM factory
   
-  rand byte data;
-  rand bit [1:0] address;
-  rand bit rd_wr;        // 0 = write, 1 = read
-  rand int delay_trans;
+  rand byte data; // APB data field
+  rand bit [1:0] address; // APB address field
+  rand bit rd_wr; // 0 = WRITE, 1 = READ
+  rand int delay_trans; // Delay before sending the transaction
 
-  constraint delay_c { delay_trans inside {[0:10]}; }
+  constraint delay_c {
+    delay_trans inside {[0:10]}; // Limit the delay between 0 and 10 clock cycles
+  }
 
   function new(string name = "tranzactie_apb");
     super.new(name);
+
     data = 0;
     address = 0;
     rd_wr = 0;
@@ -26,12 +29,14 @@ class tranzactie_apb extends uvm_sequence_item;
   endfunction
   
   function tranzactie_apb copy();
-    copy = new();
+    copy = new(); // Create a new transaction object
+
     copy.data        = this.data;
     copy.address     = this.address;
     copy.rd_wr       = this.rd_wr;
     copy.delay_trans = this.delay_trans;
-    return copy;
+
+    return copy; // Return the copied transaction
   endfunction
 
 endclass
