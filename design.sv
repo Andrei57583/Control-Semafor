@@ -8,8 +8,8 @@
 module Semafor_control #(
 
 parameter start_intermitent_mode = 3, //hour where intermitent_mode starts
-parameter stop_intermitent_mode  = 6, //hour where intermitent_mode ends
-parameter blink_freq             = 10 //frequency of the yellow bulb blink
+parameter stop_intermitent_mode  = 6 //hour where intermitent_mode ends
+
 )(
 input          clk         ,
 input          rst_n       ,
@@ -159,6 +159,7 @@ begin
     end
 end
 // /\---------------------- cycle counter ----------------------/\
+
 // \/------------------ semaphore transitions ------------------\/  
 always@(posedge clk or negedge rst_n) 
 begin 
@@ -307,4 +308,5 @@ endmodule
   //assign car_yellow_reg = 7;   
   // assign car_red_reg = 10;
   
+ // parameter blink_freq             = 10 //frequency of the yellow bulb blink
   //parameter full_cycle             = 20 //MUST be less than 256 // timp incare butonul nu mai ia valori dupa apasarea butonului si dureaza pana cand rosu se schimba in verde semafor masina
