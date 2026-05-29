@@ -7,11 +7,11 @@ class monitor_apb extends uvm_monitor;
 
   coverage_apb colector_coverage_apb; // Coverage collector instance
 
-  uvm_analysis_port #(tranzactie_APB) port_date_monitor_apb; // Port used to send collected transactions to the scoreboard
+  uvm_analysis_port #(tranzactie_apb) port_date_monitor_apb; // Port used to send collected transactions to the scoreboard
 
   virtual apb_interface_dut interfata_monitor_apb; // Virtual APB interface used for signal sampling
 
-  tranzactie_APB starea_preluata_a_apb, aux_tr_apb; // Transaction objects used for collected and copied data
+  tranzactie_apb starea_preluata_a_apb, aux_tr_apb; // Transaction objects used for collected and copied data
 
   function new(string name = "monitor_apb", uvm_component parent = null);
     super.new(name, parent); // Call the parent constructor

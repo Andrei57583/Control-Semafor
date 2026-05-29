@@ -1,3 +1,6 @@
+`include "uvm_macros.svh"
+import uvm_pkg::*;
+
 `ifndef __apb_agent
 `define __apb_agent
 
