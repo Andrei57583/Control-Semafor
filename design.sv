@@ -1,27 +1,27 @@
 //autor: Gheorghe Andrei
-//data: 12 mar 2026
+//date: 12 Mar 2026
 
-//descriere:
+//description:
 
 
 //===== car green ================= car yellow ==== car red ============================ car green ===
 //==== human red === human button============================human green ==== human red ==============
 module Semafor_control #(
-//parameter wait_button       = 10; //semafor car green  -> yellow
-//parameter wait_car_yellow   = 10; //semafor car yellow -> red
-//parameter wait_car_red      = 10; //semafor car red    -> green 
+//parameter wait_button       = 10; //car traffic light green -> yellow
+//parameter wait_car_yellow   = 10; //car traffic light yellow -> red
+//parameter wait_car_red      = 10; //car traffic light red -> green 
 parameter start_intermitent_mode = 3,
 parameter stop_intermitent_mode  = 6,
 parameter blink_freq             = 24,
-parameter full_cycle             = 100 // timp incare butonul nu mai ia valori dupa apasarea butonului si dureaza pana cand rosu se schimba in verde semafor masina
+parameter full_cycle             = 100 // time during which the button no longer accepts values after being pressed and lasts until the car red light changes to green
 )(
 
 input          clk         ,
 input          rst_n       ,
 
-input buton_pietoni        , // apasat de pietoni, dupa --N-- sec culoarea se schimba din Rosu in verde pe semafor pieton
-input senzor_lumina        , // senzor de lumina
-input [5-1:0] ora_curenta  , // la o anumita ora intra in intermitent
+input buton_pietoni        , // pressed by pedestrians; after --N-- sec the color changes from red to green on the pedestrian traffic light
+input senzor_lumina        , // light sensor
+input [5-1:0] ora_curenta  , // at a certain hour it enters blinking mode
 
 input        [2-1:0] Paddr,
 input 				       Pwrite,
@@ -32,61 +32,61 @@ output logic [8-1:0] Prdata,
 output logic 		     Pready,
 output logic 		     Pslverr,
                                       //       10          01
-output logic [2-1:0] semafor_pietoni, // MSB = red, LSB = green, 1 activ
+output logic [2-1:0] semafor_pietoni, // MSB = red, LSB = green, active high
                                       //    100            010           001
 output logic [3-1:0] semafor_masini, // MSB red, middle = yellow, LSB = green
 
-output logic [8-1:0] durata_display, //un indicator LED care arata masinilor cat timp mai au de asteptat
-output               lampa         , //lampa care ilumineaza trecerea de pietoni // activ pe senzor_lumina = 0
-output               buzer_pietoni  //buzer pentru persoane cu dizabilitati de vedere //activ pe pieton = 1
+output logic [8-1:0] durata_display, // LED indicator that shows drivers how much time they still have to wait
+output               lampa         , // lamp that illuminates the pedestrian crossing // active when senzor_lumina = 0
+output               buzer_pietoni  // buzzer for visually impaired people // active when pedestrian = 1
 );
 
 task sgsggsggdg//////////////////////////////////////////////////////////////////////////////////////////////////
-//registri acceesibili prin APB
+//registers accessible through APB
 reg  [8-1:0]   car_green_reg;  //0
 reg  [8-1:0]   car_yellow_reg; //1
 reg  [8-1:0]   car_red_reg;    //2
 
 reg buton_pietoni_intarziat;
 wire buton_pietoni_apasat;
-//semnale interne
+//internal signals
 //reg    pieton_semafor_reg,
 
 reg [blink_freq-1 : 0] interminent_counter;
 reg            [8-1:0] count ;   
 
-//scrierea registrilor prin APB
+//writing the registers through APB
  always @(posedge clk or negedge rst_n)
     if (~rst_n) begin
     count <= 'd0;
     end
     else 
-    if(Pwrite == 1 && Psel == 1 && Penable == 0)// suntem in primul tact al tranzactiei de scriere
+    if(Pwrite == 1 && Psel == 1 && Penable == 0)// we are in the first clock cycle of the write transaction
     case(Paddr)
       0:car_green_reg  <= Pwdata;
       1:car_yellow_reg <= Pwdata;
       2:car_red_reg    <= Pwdata;
-      default: $warning("adresa invalida");
+      default: $warning("invalid address");
     endcase  
 
  
-// citirea registrilor prin APB
+// reading the registers through APB
  always @(posedge clk or negedge rst_n)
     if (~rst_n) 
 		Prdata <= 0;
 	else begin
-      if(Psel && !Penable && !Pwrite)begin // suntem in primul tact al tranzactiei de citire
+      if(Psel && !Penable && !Pwrite)begin // we are in the first clock cycle of the read transaction
         case (Paddr)
 			0: Prdata <= car_green_reg ;       
 			1: Prdata <= car_yellow_reg;       
 			2: Prdata <= car_red_reg   ;       
-			default: $warning("adresa nealocata");
+			default: $warning("unallocated address");
 		endcase
       end
     end
 	
-//Modelarea semnalului de eroare	
-//"1" cand se aceseaza o adresa care nu este asignata unui registru
+//Error signal modeling	
+//"1" when an address that is not assigned to a register is accessed
 always @(posedge clk or negedge rst_n)
 	if (~rst_n)
 		Pslverr <= 0;
@@ -96,8 +96,8 @@ always @(posedge clk or negedge rst_n)
   else if(Psel == 1 && Penable == 0 && Paddr > 2)
 	Pslverr <= 1;
 	
-//Modelarea semnalului Pready
-//Arata ca DUT ul acepta tranzactia si se activeaza tt timpul in al 2lea tact al tranzactiei	
+//Pready signal modeling
+//Shows that the DUT accepts the transaction and is always activated in the 2nd clock cycle of the transaction	
 always @(posedge clk or negedge rst_n)
 	if (~rst_n)
 		Pready <= 0;
@@ -107,40 +107,40 @@ always @(posedge clk or negedge rst_n)
 	else if(Psel == 1 && Penable == 0 )
 	Pready <= 'b1;
 endtask////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ========================= apasarea butonului si tranzitii =========================
+// ========================= button press and transitions =========================
 //assign buton_pietoni  = 'b0   ;
 //assign semafor_pieton = 'b10  ;
 //assign semafor_masini = 'b001 ;
 
 always@(posedge clk or negedge rst_n) 
 begin
-//tranzitii
+//transitions
    if(rst_n)    //Set Counter to Zero
       count <= 0;
-    else if(buton_apasat == 'b1)  //sem car red
+    else if(buton_apasat == 'b1)  //car traffic light red
       count <= count + 1'b1;
    // if (count == full_cycle)
     //  count <= 0;
-   if(count > car_green_reg) //sem car green 
+   if(count > car_green_reg) //car traffic light green 
 		semafor_masini <= 'b100;
     
-	if(count > car_yellow_reg) //sem car yellow  
+	if(count > car_yellow_reg) //car traffic light yellow  
 		semafor_masini <= 'b010;
 		
-	if(count > car_red_reg) //sem car green
+	if(count > car_red_reg) //car traffic light green
 		semafor_pietoni <= 'b10 ;
 		semafor_masini <= 'b001;
 	
   end
   
-  //counter descrescator, deoarece daca apasam butonul count numara doar pana la 1
+  //down counter, because if we press the button, count only counts up to 1
 always@(posedge clk or negedge rst_n) 
 begin
-//tranzitii
+//transitions
    if(rst_n)    //Set Counter to Zero
       counter <= 0;
       
-      else // numara descrescator, cat timp numara count initial numara
+      else // counts down while the initial count is counting
   
   
   
@@ -155,7 +155,7 @@ begin
   end
   
   /*
-    // ========================= dead buton after press =========================
+    // ========================= dead button after press =========================
   always@(posedge clk) 
 begin
   if(count != full_cycle || count != 0) 
@@ -170,14 +170,14 @@ end
   end
 
   
-  // ========================= buzzer si lumini =========================
+  // ========================= buzzer and lights =========================
   if(car_green_reg != 0)
   buzer <= 'b1;
   
-  if(senzor_lumina == 1) // senzor lumina
+  if(senzor_lumina == 1) // light sensor
   lampa <= 'b1;
   
-  // ========================= intermitent intre orele xx si XX =========================
+  // ========================= blinking mode between hours xx and XX =========================
   
     always@(posedge clk) 
   begin
@@ -187,14 +187,14 @@ end
         if (rst_n) 
         begin
             interminent_counter <= 0;
-            semafor_masini     <= 'b000;  // semafor off on all colors
+            semafor_masini     <= 'b000;  // traffic light off on all colors
         end else 
         begin
             interminent_counter <= interminent_counter + 1;
                                                                                                   //blink_freq-1 = max size of the register
             if (interminent_counter >=  (blink_freq-1)/2 && interminent_counter !(blink_freq-1)) // counter reaches middlepoint, yellow light on
                 semafor_masini <= car_yellow_reg;                                               // counter reaches middlepoint, yellow light on
-            if (interminent_counter == blink_freq-1)  //  counter overflows, yellow light off
+            if (interminent_counter == blink_freq-1)  // counter overflows, yellow light off
                 semafor_masini <= 'b000;
             
             //interminent_counter ====================================/2======================================

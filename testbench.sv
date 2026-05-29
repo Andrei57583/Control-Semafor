@@ -4,12 +4,12 @@ import uvm_pkg::*;
 `define PERIOADA_CEASULUI 10
 
 
-//`define DEBUG      //parametru folosit pentru a activa mesaje pe care noi le stabilim ca ar fi necesare doar la debug
+//`define DEBUG      // Parameter used to enable messages that are only needed during debug
 
-//stabilirea semnificatiei unitatilor de timp din simulator
+// Define the meaning of the time units used by the simulator
 `timescale 1ns/1ns
 
-//includerea fisierelor la care modulul de top trebuie sa aiba acces
+// Include the files that the top module needs to access
 
 `include "apb_interface_dut.sv"
 `include "rename_interface_dut.sv"
@@ -22,14 +22,13 @@ module top();
    logic        clk;
    wire         rst_n;
   
-  //sunt create instantele interfetelor (in acest proiect sunt 2 agenti, deci vor fi 2 interfete); se leaga semnalele interfetelor de semnalele din modulul de top
+  // Interface instances are created here.
+  // In this project there are two agents, so two interfaces are used.
+  // The interface signals are connected to the signals from the top module.
   
- 
-
-
-wire buton_pietoni        ; // apasat de pietoni, dupa --N-- sec culoarea se schimba din Rosu in verde pe semafor pieton
-wire senzor_lumina        ; // senzor de lumina
-wire [5-1:0] ora_curenta  ; // la o anumita ora intra in intermitent
+wire buton_pietoni        ; // Pressed by pedestrians; after --N-- sec the color changes from red to green on the pedestrian traffic light
+wire senzor_lumina        ; // Light sensor
+wire [5-1:0] ora_curenta  ; // At a certain hour, the system enters blinking mode
 
 wire        [2-1:0] Paddr;
 wire 				       Pwrite;
@@ -40,13 +39,13 @@ wire [8-1:0] Prdata;
 wire 		     Pready;
 wire 		     Pslverr;
                                       //       10          01
-wire [2-1:0] semafor_pietoni; // MSB = red, LSB = green, 1 activ
+wire [2-1:0] semafor_pietoni; // MSB = red, LSB = green, active high
                                       //    100            010           001
-wire [3-1:0] semafor_masini; // MSB red, middle = yellow, LSB = green
+wire [3-1:0] semafor_masini; // MSB = red, middle = yellow, LSB = green
 
-wire  [8-1:0] durata_display; //un indicator LED care arata masinilor cat timp mai au de asteptat
-wire               lampa         ; //lampa care ilumineaza trecerea de pietoni // activ pe senzor_lumina = 0
-wire               buzer_pietoni;  //buzer pentru persoane cu dizabilitati de vedere //activ pe pieton = 1
+wire  [8-1:0] durata_display; // LED indicator that shows drivers how much time they still have to wait
+wire               lampa         ; // Lamp that illuminates the pedestrian crossing // active when senzor_lumina = 0
+wire               buzer_pietoni;  // Buzzer for visually impaired people // active when pedestrian = 1
 
 apb_interface_dut intf_apb();
   assign intf_apb.pclk = clk;
@@ -54,32 +53,32 @@ apb_interface_dut intf_apb();
   assign Psel          = intf_apb.psel;
   assign Penable       = intf_apb.penable;
   assign Paddr         = intf_apb.paddr;
-  assign Pwrite		   =intf_apb.pwrite;
-  assign Pwdata		   =intf_apb.pwdata;
-  assign intf_apb.pready= Pready;
-  assign intf_apb.prdata=Prdata;
-  assign intf_apb.pslverr=Pslverr;
+  assign Pwrite		   = intf_apb.pwrite;
+  assign Pwdata		   = intf_apb.pwdata;
+  assign intf_apb.pready  = Pready;
+  assign intf_apb.prdata  = Prdata;
+  assign intf_apb.pslverr = Pslverr;
   
   rename_interface_dut intf_rename();
   assign intf_rename.clk = clk;
   assign valid = intf_rename.valid;
   assign addr  = intf_rename.addr;
-  assign intf_rename.irq   = irq;
+  assign intf_rename.irq = irq;
 
  Semafor_control #(
-//.wait_button       (10), //semafor car green  -> yellow
-//.wait_car_yellow   (10), //semafor car yellow -> red
-//.wait_car_red      (10), //semafor car red    -> green 
+//.wait_button       (10), // Car traffic light green -> yellow
+//.wait_car_yellow   (10), // Car traffic light yellow -> red
+//.wait_car_red      (10), // Car traffic light red -> green 
 .start_intermitent_mode (3),
 .stop_intermitent_mode  (6),
 .blink_freq             (24),
-.full_cycle             (100) // timp incare butonul nu mai ia valori dupa apasarea butonului si dureaza pana cand rosu se schimba in verde semafor masina
+.full_cycle             (100) // Time during which the button no longer accepts values after being pressed and lasts until the car red light changes to green
 ) Semafor_control_i
 
 (
-.buton_pietoni(buton_pietoni),         // apasat de pietoni, dupa --N-- sec culoarea se schimba din Rosu in verde pe semafor pieton
-.senzor_lumina(senzor_lumina),         // senzor de lumina
-.ora_curenta(ora_curenta),   // la o anumita ora intra in intermitent
+.buton_pietoni(buton_pietoni), // Pressed by pedestrians; after --N-- sec the color changes from red to green on the pedestrian traffic light
+.senzor_lumina(senzor_lumina), // Light sensor
+.ora_curenta(ora_curenta), // At a certain hour, the system enters blinking mode
 
 .Paddr(Paddr),
 .Pwrite(Pwrite),
@@ -90,19 +89,23 @@ apb_interface_dut intf_apb();
 .Pready(Pready),
 .Pslverr(Pslverr),
                                   //       10          01
-.semafor_pietoni(semafor_pietoni), // MSB = red, LSB = green, 1 activ
+.semafor_pietoni(semafor_pietoni), // MSB = red, LSB = green, active high
                                  //    100            010           001
-.semafor_masini(semafor_masini), // MSB red, middle = yellow, LSB = green
+.semafor_masini(semafor_masini), // MSB = red, middle = yellow, LSB = green
 
-.durata_display(durata_display), //un indicator LED care arata masinilor cat timp mai au de asteptat
-.lampa         (lampa), //lampa care ilumineaza trecerea de pietoni // activ pe senzor_lumina = 0
-.buzer_pietoni(buzer_pietoni)  //buzer pentru persoane cu dizabilitati de vedere //activ pe pieton = 1);
+.durata_display(durata_display), // LED indicator that shows drivers how much time they still have to wait
+.lampa         (lampa), // Lamp that illuminates the pedestrian crossing // active when senzor_lumina = 0
+.buzer_pietoni(buzer_pietoni)  // Buzzer for visually impaired people // active when pedestrian = 1
 );
+);
+
  initial begin
-    //cele 2 linii de mai jos permit vizualizarea formelor de unda (pentru a vizualiza formele de unda trebuie bifata si optiunea "Open EPWave after run" din sectiunea "Tools & Simulators" aflata in stanga paginii)
+    // The two lines below enable waveform visualization.
+    // To view the waveforms, the "Open EPWave after run" option must also be checked in the "Tools & Simulators" section on the left side of the page.
     $dumpfile("dump.vcd");
     $dumpvars;
-    //se genereaza ceasul
+
+    // Clock generation
 	clk = 1;
 	forever begin 
     #(`PERIOADA_CEASULUI/2)  
@@ -112,14 +115,15 @@ apb_interface_dut intf_apb();
   
    initial
   	begin
-      //se salveaza instantele interfetelor in baza de date UVM
+      // Store the interface instances in the UVM database
       uvm_config_db#(virtual apb_interface_dut)::set(null, "*", "apb_interface_dut", intf_apb);
       uvm_config_db#(virtual rename_interface_dut)::set(null, "*", "rename_interface_dut", intf_rename);
-      //se ruleaza testul dorit
+
+      // Run the selected test
       run_test("test_exemplu");
   	end
 
-  // se instantiaza DUT-ul, facandu-se legaturile intre semnalele din modulul de top si semnalele acestuia
+  // Instantiate the DUT and connect the top module signals to the DUT signals
   my_dut DUT(
 	.pclk_i                  (clk    ),
 	.rst_n_i                 (rst_n   ),
