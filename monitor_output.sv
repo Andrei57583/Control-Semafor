@@ -1,7 +1,10 @@
 //Autor Dennis Muturi
 
 `include "uvm_macros.svh"
+// Includes UVM macros
+
 `include "tranzactie_iesire.sv"
+
 import uvm_pkg::*;
 
 `ifndef __output_monitor
